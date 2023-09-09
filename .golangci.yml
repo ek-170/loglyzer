@@ -1,4 +1,2 @@
 run:
   timeout: 10m
-  skip-dirs:
-    - gen

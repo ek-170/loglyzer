@@ -220,6 +220,46 @@ services:
       timeout: 10s
       retries: 120
 
+################################
+##            API             ##
+################################
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile.${STAGE}
+    ports:
+      - 8080:8080
+    depends_on:
+      es01:
+        condition: service_healthy
+      es02:
+        condition: service_healthy
+      es03:
+        condition: service_healthy
+    volumes:
+      - ../:/app
+    restart: always
+
+################################
+##          Loader            ##
+################################
+  # loader:
+  #   container_name: log-loader
+  #   build: ./loader
+  #   restart: always
+
+################################
+##            WEB             ##
+################################
+  # web:
+  #   container_name: web
+  #   build: ./web
+  #   restart: always
+
+
+
+
 volumes:
   certs:
     driver: local
@@ -231,13 +271,3 @@ volumes:
     driver: local
   kibanadata:
     driver: local
-
-################################
-##            API             ##
-################################
-
-
-
-################################
-##            WEB             ##
-################################
