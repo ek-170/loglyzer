@@ -2,7 +2,10 @@ module github.com/ek-170/loglyzer
 
 go 1.21
 
-require github.com/olivere/elastic/v7 v7.0.32
+require (
+	github.com/olivere/elastic/v7 v7.0.32
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	github.com/josharian/intern v1.0.0 // indirect
