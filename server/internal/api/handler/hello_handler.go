@@ -1,31 +1,11 @@
 package handler
 
 import (
-	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
-type HelloHandler interface {
-	HandleHello(w http.ResponseWriter, r *http.Request)
-}
-
-type helloHandler struct {
-}
-
-func NewHelloHandler() HelloHandler {
-	return &helloHandler{}
-}
-
-func (dh *helloHandler) HandleHello(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		hello(w, r)
-	default:
-		http.Error(w, fmt.Sprintf("Method %s is not allowed", r.Method), 405)
-	}
-}
-
-func hello(w http.ResponseWriter, _ *http.Request) {
-  io.WriteString(w, "Hello World!\n")
+func HandleHello(c echo.Context) error {
+  return c.String(http.StatusOK, "Hello, World!")
 }

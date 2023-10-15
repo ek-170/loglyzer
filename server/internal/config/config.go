@@ -8,11 +8,18 @@ import (
 )
 
 type Server struct {
-  Port string
+  Port string `yaml:"port"`
+}
+
+type FullTextSearch struct {
+  Schme string `yaml:"ftsScheme"`
+  Host string  `yaml:"ftsHost"`
+  Port string  `yaml:"ftsPort"`
 }
 
 type ConfigList struct {
-	Server Server
+	Server Server                 `yaml:",inline"`
+  FullTextSearch FullTextSearch `yaml:",inline"`
 }
 
 var Config ConfigList
@@ -22,11 +29,19 @@ func init() {
 }
 
 func LoadConfig() {
-  f, err := os.Open("../../config.yml")
+  // search from server dir
+  f, err := os.Open("./config.yml")
   if err != nil {
-    log.Fatal("config.yml loading error:", err)
+    // serarch from main.go
+    f, err = os.Open("../../config.yml")
+      if err != nil {
+        log.Fatal("config.yml loading error:", err)
+      }
   }
   defer f.Close()
 
   err = yaml.NewDecoder(f).Decode(&Config)
+  if err != nil {
+    log.Fatal("config.yml decoding error:", err)
+  }
 }

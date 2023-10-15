@@ -1,2 +1,6 @@
 server:
-  port: "9765"
+  porti: "8080"
+fulltextSearch:
+  ftsScheme : "http"
+  ftsHost: "es01"
+  ftsPort: "9200"

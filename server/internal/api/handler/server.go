@@ -1,18 +1,32 @@
 package handler
 
 import (
-	"net/http"
+	"strings"
 
 	"github.com/ek-170/loglyzer/internal/config"
+  "github.com/labstack/echo/v4"
 )
 
 const (
   apiPathV1 = "/api/v1/"
 )
 
-func StartMainServer() error {
-	http.HandleFunc(apiPathV1+"hello", NewHelloHandler().HandleHello)
-	// http.HandleFunc(apiPathV1+"searchsource/", dh.HandleDiary)
+func StartMainServer() {
 
-	return http.ListenAndServe(":"+config.Config.Server.Port, nil)
+  e := echo.New()
+
+  // handle "hello"
+  e.GET(joinPath("hello"), HandleHello)
+
+  // handle "Grok"
+  e.GET(joinPath("grok-patterns"), HandleGrokGet)
+
+  e.Logger.Fatal(e.Start(":"+config.Config.Server.Port))
+}
+
+func joinPath(pattern string) string {
+  if strings.HasPrefix(pattern, "/"){
+     return apiPathV1 + pattern[1:]
+  }
+  return apiPathV1 + pattern
 }

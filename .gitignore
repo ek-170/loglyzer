@@ -23,5 +23,7 @@ go.work
 # private
 .idea/*
 tmp/*
+tmp
 .vscode/*
 logs/*
+logs
