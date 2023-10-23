@@ -18,24 +18,24 @@ type FullTextSearch struct {
 }
 
 type ConfigList struct {
-	Server Server                 `yaml:",inline"`
-  FullTextSearch FullTextSearch `yaml:",inline"`
+	Server Server                 `yaml:"server"`
+  FullTextSearch FullTextSearch `yaml:"fullTextSearch"`
 }
 
 var Config ConfigList
 
 func init() {
-	LoadConfig()
+	LoadConfig("config.yml")
 }
 
-func LoadConfig() {
+func LoadConfig(fileName string) {
   // search from server dir
-  f, err := os.Open("./config.yml")
+  f, err := os.Open("./" + fileName)
   if err != nil {
     // serarch from main.go
-    f, err = os.Open("../../config.yml")
+    f, err = os.Open("../../" + fileName)
       if err != nil {
-        log.Fatal("config.yml loading error:", err)
+        log.Fatal(fileName + " loading error:", err)
       }
   }
   defer f.Close()

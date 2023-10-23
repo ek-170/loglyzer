@@ -1,6 +1,6 @@
 server:
-  porti: "8080"
-fulltextSearch:
+  port: "8080"
+fullTextSearch:
   ftsScheme : "http"
   ftsHost: "es01"
   ftsPort: "9200"

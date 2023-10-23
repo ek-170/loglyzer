@@ -24,9 +24,12 @@ func (eg EsGrokRepository) GetGrokPatterns(q string) ([]*GrokPattern, error){
     log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
     return nil, err
   }
-  var grokPatterns []*GrokPattern
+  var grokPatterns []*GrokPattern = []*GrokPattern{}
   for name, pipeline := range res {
-    // is k pipeline name?
+    // if q is empty, return all grok patterns
+    if(q != "" && q != name){
+      continue
+    }
     for _, processor := range pipeline.Processors {
       if processor.Grok != nil {
         grokPattern := &GrokPattern{
@@ -37,5 +40,6 @@ func (eg EsGrokRepository) GetGrokPatterns(q string) ([]*GrokPattern, error){
       }
     }
   }
+  log.Printf("air test...")
   return grokPatterns, nil
 }

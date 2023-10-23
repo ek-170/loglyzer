@@ -1,10 +1,10 @@
 package repository
 
 type GrokRepository interface {
-	GetGrokPatterns(q string) ([]*GrokPattern, error) // 必要なパラメータの調査
+	GetGrokPatterns(q string) ([]*GrokPattern, error)
 }
 
 type GrokPattern struct {
-	Name string
-  Pattern string
+	Name string     `json:"name"`
+	Pattern string  `json:"pattern"`
 }

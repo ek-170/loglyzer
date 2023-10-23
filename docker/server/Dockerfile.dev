@@ -2,8 +2,10 @@ FROM golang:1.21.1 as bulid-env
 LABEL author="Takahiro Muramoto"
 LABEL version="1.0"
 
+ENV TZ /usr/share/zoneinfo/Asia/Tokyo
+
 WORKDIR /app
 RUN go install github.com/cosmtrek/air@v1.45.0
 RUN go install github.com/go-delve/delve/cmd/dlv@v1.21.0
 
-CMD sh -c "go mod tidy && air -c .air.toml"
+CMD sh -c "go mod tidy && air -d -c .air.toml"
