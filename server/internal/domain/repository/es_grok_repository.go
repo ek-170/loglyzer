@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"log"
+	"sort"
 
-  "github.com/ek-170/loglyzer/internal/consts"
+	"github.com/ek-170/loglyzer/internal/consts"
 	"github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
 )
 
@@ -14,7 +15,7 @@ func NewEsGrokRepository() EsGrokRepository{
   return EsGrokRepository{}
 }
 
-func (eg EsGrokRepository) GetGrokPatterns(q string) ([]*GrokPattern, error){
+func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
   client, err := elasticsearch.CreateElasticsearchClient()
   if err != nil {
     return nil, err
@@ -40,6 +41,23 @@ func (eg EsGrokRepository) GetGrokPatterns(q string) ([]*GrokPattern, error){
       }
     }
   }
-  log.Printf("air test...")
-  return grokPatterns, nil
+  return sortGrokPatterns(grokPatterns, true), nil
+}
+
+// TODO: change "asc" to enum
+func sortGrokPatterns(arr []*GrokPattern, asc bool) ([]*GrokPattern){
+	if len(arr) < 1 {
+		return arr
+	}
+  if asc {
+    sort.Slice(arr, func(i, j int) bool {
+      return arr[i].Name < arr[j].Name
+    })
+  } else {
+    // desc
+    sort.Slice(arr, func(i, j int) bool {
+      return arr[i].Name > arr[j].Name
+    })
+  }
+	return arr
 }

@@ -1,7 +1,7 @@
 package repository
 
 type GrokRepository interface {
-	GetGrokPatterns(q string) ([]*GrokPattern, error)
+	FindGrokPatterns(q string) ([]*GrokPattern, error)
 }
 
 type GrokPattern struct {

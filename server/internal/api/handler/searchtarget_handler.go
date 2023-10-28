@@ -2,36 +2,60 @@ package handler
 
 import (
 	"fmt"
-	"io"
+	"log"
 	"net/http"
+
+	"github.com/ek-170/loglyzer/internal/consts"
+	"github.com/ek-170/loglyzer/internal/domain/repository"
+	"github.com/ek-170/loglyzer/internal/usecase"
+	"github.com/labstack/echo/v4"
 )
 
-type SearchTargetHandler interface {
-	HandleSearchTarget(w http.ResponseWriter, r *http.Request)
-}
-
-type searchTargetHandler struct {
-}
-
-func NewSearchTargetHandler() SearchTargetHandler {
-	return &searchTargetHandler{}
-}
-
-func (ssh *searchTargetHandler) HandleSearchTarget(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-    case http.MethodGet:
-        getSearchTarget(w, r)
-    // case http.MethodPost:
-    //     findSearchtarget(w, r)
-    // case http.MethodPut:
-    //     upsertSearchtarget(w, r)
-    // case http.MethodDelete:
-    //     deleteSearchtarget(w, r)
-	default:
-		http.Error(w, fmt.Sprintf("Method %s is not allowed", r.Method), 405)
+func HandleSearchTargetFind(c echo.Context) error {
+	log.Println("Start finding Search Target.")
+	usecase := usecase.NewSearchTargetUsecase(repository.NewEsSearchTargetRepository())
+	// only search for property "alias"
+	q := c.QueryParam("q")
+	log.Printf("query keyword is \"%s\"", q)
+	st, err := usecase.FindSearchTargets(q)
+	if err != nil {
+	  echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf(consts.FAIL_FIND, "Search Target"))
 	}
+	return c.JSON(http.StatusOK, st)
 }
 
-func getSearchTarget(w http.ResponseWriter, _ *http.Request) {
-  io.WriteString(w, "Searchtarget World!\n")
+func HandleSearchTargetGet(c echo.Context) error {
+	log.Println("Start fetching Search Target.")
+	usecase := usecase.NewSearchTargetUsecase(repository.NewEsSearchTargetRepository())
+	name := c.Param("name")
+	log.Printf("specified name is \"%s\"", name)
+	st, err := usecase.GetSearchTarget(name)
+	if err != nil {
+	  echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf(consts.FAIL_GET, "Search Target"))
+	}
+	return c.JSON(http.StatusOK, st)
+}
+
+func HandleSearchTargetCreate(c echo.Context) error {
+	log.Println("Start creating Search Target.")
+	usecase := usecase.NewSearchTargetUsecase(repository.NewEsSearchTargetRepository())
+	name := c.Param("name")
+	log.Printf("specified name is \"%s\"", name)
+	err := usecase.CreateSearchTarget(name)
+	if err != nil {
+	  echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf(consts.FAIL_CREATE, "Search Target"))
+	}
+	return c.NoContent(http.StatusCreated)
+}
+
+func HandleSearchTargetDelete(c echo.Context) error {
+	log.Println("Start deleting Search Target.")
+	usecase := usecase.NewSearchTargetUsecase(repository.NewEsSearchTargetRepository())
+	name := c.Param("name")
+	log.Printf("specified name is \"%s\"", name)
+	err := usecase.DeleteSearchTarget(name)
+	if err != nil {
+	  echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf(consts.FAIL_DELETE, "Search Target"))
+	}
+	return c.NoContent(http.StatusOK)
 }

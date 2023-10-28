@@ -11,15 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func HandleGrokGet(c echo.Context) error {
-  log.Println("Start fetching Grok Patterns.")
+func HandleGrokFind(c echo.Context) error {
+  log.Println("Start finding Grok Patterns.")
   usecase := usecase.NewGrokUsecase(repository.NewEsGrokRepository())
   // only search for grok pattern name
   q := c.QueryParam("q")
   log.Printf("query keyword is \"%s\"", q)
-  grok, err := usecase.GetGrokPattern(q)
+  grok, err := usecase.FindGrokPatterns(q)
   if err != nil {
     echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf(consts.FAIL_GET, "Grok Pattern"))
   }
-  return  c.JSON(http.StatusCreated, grok)
+  return  c.JSON(http.StatusOK, grok)
 }

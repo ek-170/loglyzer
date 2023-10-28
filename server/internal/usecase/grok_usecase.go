@@ -17,8 +17,8 @@ func NewGrokUsecase(grokRepository repository.GrokRepository) *GrokUsecase {
   }
 }
 
-func (gu GrokUsecase) GetGrokPattern(q string) ([]*repository.GrokPattern, error) {
-  result, err := gu.grokRepository.GetGrokPatterns(q)
+func (gu GrokUsecase) FindGrokPatterns(q string) ([]*repository.GrokPattern, error) {
+  result, err := gu.grokRepository.FindGrokPatterns(q)
   if err != nil {
     log.Printf(consts.FAIL_GET, "Grok Pattern")
     return nil, err
