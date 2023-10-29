@@ -1,9 +1,6 @@
 package usecase
 
 import (
-	"log"
-
-	"github.com/ek-170/loglyzer/internal/consts"
 	"github.com/ek-170/loglyzer/internal/domain/repository"
 )
 
@@ -20,7 +17,6 @@ func NewSearchTargetUsecase(searchTargetRepository repository.SearchTargetReposi
 func (gu SearchTargetUsecase) FindSearchTargets(q string) ([]*repository.SearchTarget, error) {
   result, err := gu.searchTargetRepository.FindSearchTargets(q)
   if err != nil {
-    log.Printf(consts.FAIL_FIND, "Search Target")
     return nil, err
   }
   return result, err
@@ -29,7 +25,6 @@ func (gu SearchTargetUsecase) FindSearchTargets(q string) ([]*repository.SearchT
 func (gu SearchTargetUsecase) GetSearchTarget(q string) (*repository.SearchTarget, error) {
   result, err := gu.searchTargetRepository.GetSearchTarget(q)
   if err != nil {
-    log.Printf(consts.FAIL_GET, "Search Target")
     return nil, err
   }
   return result, err
@@ -43,7 +38,6 @@ func (gu SearchTargetUsecase) CreateSearchTarget(name string) (error) {
   // }
   err := gu.searchTargetRepository.CreateSearchTarget(name)
   if err != nil {
-    log.Printf(consts.FAIL_CREATE, "Search Target")
     return err
   }
   return err
@@ -56,7 +50,6 @@ func (gu SearchTargetUsecase) CreateSearchTarget(name string) (error) {
 func (gu SearchTargetUsecase) DeleteSearchTarget(name string) (error) {
   err := gu.searchTargetRepository.DeleteSearchTarget(name)
   if err != nil {
-    log.Printf(consts.FAIL_DELETE, "Search Target")
     return err
   }
   return err

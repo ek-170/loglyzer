@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 	"sort"
+  "errors"
 
-	"github.com/ek-170/loglyzer/internal/consts"
-	"github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
+	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
 )
 
 type EsGrokRepository struct {}
@@ -16,14 +16,14 @@ func NewEsGrokRepository() EsGrokRepository{
 }
 
 func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
-  client, err := elasticsearch.CreateElasticsearchClient()
+  client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
   }
   res, err := client.Ingest.GetPipeline().Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
-    return nil, err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
+    return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var grokPatterns []*GrokPattern = []*GrokPattern{}
   for name, pipeline := range res {

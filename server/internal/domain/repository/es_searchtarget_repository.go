@@ -2,12 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"log"
 	"sort"
 	"strings"
 
-	"github.com/ek-170/loglyzer/internal/consts"
-	"github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
+  es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
 )
 
 type EsSearchTargetRepository struct {}
@@ -17,14 +17,14 @@ func NewEsSearchTargetRepository() EsSearchTargetRepository{
 }
 
 func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget, error){
-  client, err := elasticsearch.CreateElasticsearchClient()
+  client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
   }
   res, err := client.Cat.Aliases().Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "cat Aliases")
-    return nil, err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "cat Aliases")
+    return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var searchTargets []*SearchTarget = []*SearchTarget{}
   builtInAliasPrefix := "."
@@ -80,14 +80,14 @@ func sortSearchTarget(arr []*SearchTarget, asc bool) []*SearchTarget {
 }
 
 func (eg EsSearchTargetRepository) GetSearchTarget(name string) (*SearchTarget, error){
-  client, err := elasticsearch.CreateElasticsearchClient()
+  client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
   }
   res, err := client.Cat.Aliases().Name(name).Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "get Aliases")
-    return nil, err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get Aliases")
+    return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var st *SearchTarget = &SearchTarget{}
   st = &SearchTarget{
@@ -98,7 +98,7 @@ func (eg EsSearchTargetRepository) GetSearchTarget(name string) (*SearchTarget, 
 }
 
 func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
-  client, err := elasticsearch.CreateElasticsearchClient()
+  client, err := es.CreateElasticsearchClient()
   if err != nil {
     return err
   }
@@ -107,34 +107,34 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
   indexName := name + "_placeholder"
   _, err = client.Indices.Create(indexName).Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "create placeholder Index")
-    return err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create placeholder Index")
+    return errors.New(es.HandleElasticsearchError(err))
   }
   _, err = client.Indices.PutAlias(indexName, name).Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
-    return err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
+    return errors.New(es.HandleElasticsearchError(err))
   }
   return nil
 }
 
 func (eg EsSearchTargetRepository) DeleteSearchTarget(name string) error {
-  client, err := elasticsearch.CreateElasticsearchClient()
+  client, err := es.CreateElasticsearchClient()
   if err != nil {
     return err
   }
   // get all Indices name
   res, err := client.Indices.GetAlias().Name(name).Do(context.TODO())
   if err != nil {
-    log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "get all indices")
-    return err
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get all indices")
+    return errors.New(es.HandleElasticsearchError(err))
   }
   // delete all Indices 
   for key := range res {
     _, err = client.Indices.Delete(key).Do(context.TODO())
     if err != nil {
-      log.Printf(consts.FAIL_REQUEST_ELASTIC_SEARCH, "delete all indices")
-      return err
+      log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete all indices")
+      return errors.New(es.HandleElasticsearchError(err))
     }
   }
   // after delete all Indices, automatically Alias has deleted
