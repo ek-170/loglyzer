@@ -30,12 +30,7 @@ func (gu SearchTargetUsecase) GetSearchTarget(q string) (*repository.SearchTarge
   return result, err
 }
 
-func (gu SearchTargetUsecase) CreateSearchTarget(name string) (error) {
-  // err := validateName(name)
-  // if err != nil {
-  //   log.Printf(consts.FAIL_CREATE, "Search Target")
-  //   return err
-  // }
+func (gu SearchTargetUsecase) CreateSearchTarget(name string) error {
   err := gu.searchTargetRepository.CreateSearchTarget(name)
   if err != nil {
     return err
@@ -43,11 +38,7 @@ func (gu SearchTargetUsecase) CreateSearchTarget(name string) (error) {
   return err
 }
 
-// func validateName(name string) error {
-// 
-// }
-
-func (gu SearchTargetUsecase) DeleteSearchTarget(name string) (error) {
+func (gu SearchTargetUsecase) DeleteSearchTarget(name string) error {
   err := gu.searchTargetRepository.DeleteSearchTarget(name)
   if err != nil {
     return err

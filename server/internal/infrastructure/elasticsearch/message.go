@@ -12,4 +12,5 @@ const (
 const (
   // error message end user can see.
   ES_EM00001 = "SearchTargetの名前は他のSearchtTargetとParseSource名と重複しないように設定してください。"
+  ES_EM00002 = "SearchTargetの名前の先頭に\".\"を使用しないでください。"
 )

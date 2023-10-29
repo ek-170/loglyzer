@@ -11,6 +11,8 @@ import (
 )
 
 type EsSearchTargetRepository struct {}
+  
+const builtInAliasPrefix string = "."
 
 func NewEsSearchTargetRepository() EsSearchTargetRepository{
   return EsSearchTargetRepository{}
@@ -27,7 +29,6 @@ func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget,
     return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var searchTargets []*SearchTarget = []*SearchTarget{}
-  builtInAliasPrefix := "."
   for _, alias := range res {
     // if q is empty, return all searchTargets
     if q != "" && q != *alias.Alias {
@@ -98,6 +99,10 @@ func (eg EsSearchTargetRepository) GetSearchTarget(name string) (*SearchTarget, 
 }
 
 func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
+  err := validateName(name)
+  if err != nil {
+    return err
+  }
   client, err := es.CreateElasticsearchClient()
   if err != nil {
     return err
@@ -114,6 +119,13 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
     return errors.New(es.HandleElasticsearchError(err))
+  }
+  return nil
+}
+
+func validateName(name string) error {
+  if strings.HasPrefix(name, builtInAliasPrefix) {
+    return errors.New(es.ES_EM00002)
   }
   return nil
 }
