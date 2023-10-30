@@ -20,7 +20,13 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
   if err != nil {
     return nil, err
   }
-  res, err := client.Ingest.GetPipeline().Do(context.TODO())
+  if q == "" {
+    // retrieve all aliases
+    q = "*"
+  }else {
+    q = "*" + q + "*"
+  }
+  res, err := client.Ingest.GetPipeline().Id(q).Do(context.TODO())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
     return nil, errors.New(es.HandleElasticsearchError(err))
@@ -28,9 +34,9 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
   var grokPatterns []*GrokPattern = []*GrokPattern{}
   for name, pipeline := range res {
     // if q is empty, return all grok patterns
-    if(q != "" && q != name){
-      continue
-    }
+    // if(q != "" && q != name){
+    //   continue
+    // }
     for _, processor := range pipeline.Processors {
       if processor.Grok != nil {
         grokPattern := &GrokPattern{

@@ -7,6 +7,14 @@ import (
 )
 
 func main() {
-  log.Printf("Start Loglyzer API")
-  handler.StartMainServer()
+	logo := `
+   _                _                       
+  | |    ___   __ _| |   _   _ _______ _ __ 
+  | |   / _ \ / _\` + "`" + `| |  | | | |_  / _ \ '__|
+  | |__| (_) | (_| | |__| |_| |/ /  __/ |   
+  |_____\___/ \__, |_____\__, /___\___|_|   
+              |___/      |___/        
+`
+	log.Println(logo)
+	handler.StartMainServer()
 }

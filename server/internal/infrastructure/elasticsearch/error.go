@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"regexp"
 )
 
@@ -25,11 +26,11 @@ func HandleElasticsearchError(err error) string {
 func parseElasticsearchError(errorStr string) (ElasticsearchError, error) {
 	var result ElasticsearchError
 
-	re := regexp.MustCompile(`status: (\d+), failed: \[([^\]]+)\], reason: (.+)`)
+	re := regexp.MustCompile(`status: (\d+), failed: \[(.*)\], reason: (.*)`)
 	matches := re.FindStringSubmatch(errorStr)
 	if len(matches) != 4 {
     log.Println("failed to parse Elasticsearch error message")
-		return result, errors.New("failed to parse Elasticsearch error message")
+		return result, errors.New("unknown error has occured when communicate Elasticsearch. please check docker log")
 	}
 	result.Status = parseInt(matches[1])
 	result.Failed = matches[2]
@@ -52,6 +53,9 @@ func parseInt(s string) int {
 func convertMsg4EndUser(err ElasticsearchError) string {
 	if err.Failed == ES_F00001 {
 		return ES_EM00001
+	}
+	if err.Status == http.StatusNotFound {
+		return ES_EM00003
 	}
 	return fmt.Sprintf("Elasticsearch Error has occured. failed: %s, reason: %s", err.Failed, err.Reason)
 }

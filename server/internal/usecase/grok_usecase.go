@@ -19,5 +19,5 @@ func (gu GrokUsecase) FindGrokPatterns(q string) ([]*repository.GrokPattern, err
   if err != nil {
     return nil, err
   }
-  return result, err
+  return result, nil
 }

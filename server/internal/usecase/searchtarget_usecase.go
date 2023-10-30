@@ -14,34 +14,34 @@ func NewSearchTargetUsecase(searchTargetRepository repository.SearchTargetReposi
   }
 }
 
-func (gu SearchTargetUsecase) FindSearchTargets(q string) ([]*repository.SearchTarget, error) {
-  result, err := gu.searchTargetRepository.FindSearchTargets(q)
+func (stu SearchTargetUsecase) FindSearchTargets(q string) ([]*repository.SearchTarget, error) {
+  result, err := stu.searchTargetRepository.FindSearchTargets(q)
   if err != nil {
     return nil, err
   }
-  return result, err
+  return result, nil
 }
 
-func (gu SearchTargetUsecase) GetSearchTarget(q string) (*repository.SearchTarget, error) {
-  result, err := gu.searchTargetRepository.GetSearchTarget(q)
+func (stu SearchTargetUsecase) GetSearchTarget(name string) (*repository.SearchTarget, error) {
+  result, err := stu.searchTargetRepository.GetSearchTarget(name)
   if err != nil {
     return nil, err
   }
-  return result, err
+  return result, nil
 }
 
-func (gu SearchTargetUsecase) CreateSearchTarget(name string) error {
-  err := gu.searchTargetRepository.CreateSearchTarget(name)
+func (stu SearchTargetUsecase) CreateSearchTarget(name string) error {
+  err := stu.searchTargetRepository.CreateSearchTarget(name)
   if err != nil {
     return err
   }
-  return err
+  return nil
 }
 
-func (gu SearchTargetUsecase) DeleteSearchTarget(name string) error {
-  err := gu.searchTargetRepository.DeleteSearchTarget(name)
+func (stu SearchTargetUsecase) DeleteSearchTarget(name string) error {
+  err := stu.searchTargetRepository.DeleteSearchTarget(name)
   if err != nil {
     return err
   }
-  return err
+  return nil
 }

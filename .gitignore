@@ -28,3 +28,4 @@ server/.vscode
 .vscode/*
 logs/*
 logs
+misc

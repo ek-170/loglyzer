@@ -12,34 +12,35 @@ import (
 
 type EsSearchTargetRepository struct {}
   
-const builtInAliasPrefix string = "."
-
 func NewEsSearchTargetRepository() EsSearchTargetRepository{
   return EsSearchTargetRepository{}
 }
 
+// Not allow multiple "q" separated by space
 func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget, error){
   client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
   }
-  res, err := client.Cat.Aliases().Do(context.TODO())
+  if q == "" {
+    // retrieve all aliases
+    q = "*"
+  }else {
+    q = "*" + q + "*"
+  }
+  res, err := client.Cat.Aliases().Name(q).Do(context.TODO())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "cat Aliases")
     return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var searchTargets []*SearchTarget = []*SearchTarget{}
   for _, alias := range res {
-    // if q is empty, return all searchTargets
-    if q != "" && q != *alias.Alias {
-      continue
-    }
     // alias start with "." is built-in alias
     if strings.HasPrefix(*alias.Alias, builtInAliasPrefix){
       continue
     }
     // duplicate aliases may be returned
-    if contains(searchTargets, *alias.Alias){
+    if containsSearchTarget(searchTargets, *alias.Alias){
       continue
     }
     if *alias.Alias != "" {
@@ -53,7 +54,7 @@ func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget,
   return sortSearchTarget(searchTargets, true), nil
 }
 
-func contains(searchTargets []*SearchTarget, new string) bool {
+func containsSearchTarget(searchTargets []*SearchTarget, new string) bool {
   for _, s := range searchTargets {
     if s.Name == new {
       return true
@@ -99,7 +100,7 @@ func (eg EsSearchTargetRepository) GetSearchTarget(name string) (*SearchTarget, 
 }
 
 func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
-  err := validateName(name)
+  err := validateSearchTargetName(name)
   if err != nil {
     return err
   }
@@ -120,10 +121,19 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(name string) error {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
     return errors.New(es.HandleElasticsearchError(err))
   }
+  indexName = name + "_parsesource_info"
+  _, err = client.Indices.Create(indexName).
+    Aliases(es.BuildAlias(name)).
+    Mappings(es.BuildParseSourceInfoMapping()).
+    Do(context.TODO())
+  if err != nil {
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create ParseSource Info Index")
+    return errors.New(es.HandleElasticsearchError(err))
+  }
   return nil
 }
 
-func validateName(name string) error {
+func validateSearchTargetName(name string) error {
   if strings.HasPrefix(name, builtInAliasPrefix) {
     return errors.New(es.ES_EM00002)
   }

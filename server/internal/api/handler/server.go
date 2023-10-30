@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/ek-170/loglyzer/internal/config"
-  "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -16,28 +16,32 @@ func StartMainServer() {
   e := echo.New()
 
   /* handle "hello" */
-  e.GET(joinPath("hello"), HandleHello)
+  e.GET(joinPathV1("hello"), HandleHello)
 
   /* handle "Grok" */
-  e.POST(joinPath("grok-patterns"), HandleGrokFind)
-  // e.PUT(joinPath("grok-patterns"), HandleGrokPut)
-  // e.DELETE(joinPath("grok-patterns"), HandleGrokDelete)
+  e.POST(joinPathV1("grok-patterns"), HandleGrokFind)
+  // e.PUT(joinPathV1("grok-patterns"), HandleGrokPut)
+  // e.DELETE(joinPathV1("grok-patterns"), HandleGrokDelete)
 
-  /* handle "Search Target" */
-  e.POST(joinPath("search-targets"), HandleSearchTargetFind)
-  e.GET(joinPath("search-targets/:name"), HandleSearchTargetGet)
-  e.PUT(joinPath("search-targets/:name"), HandleSearchTargetCreate)
-  e.DELETE(joinPath("search-targets/:name"), HandleSearchTargetDelete)
+  /* handle "SearchTarget" */
+  e.POST(joinPathV1("search-targets"), HandleSearchTargetFind)
+  e.GET(joinPathV1("search-targets/:search-target"), HandleSearchTargetGet)
+  e.PUT(joinPathV1("search-targets/:search-target"), HandleSearchTargetCreate)
+  e.DELETE(joinPathV1("search-targets/:search-target"), HandleSearchTargetDelete)
 
-  /* handle "Parce Source" */
-  // e.GET(joinPath("parse-sources"), HandleParseSourcekGet)
-  // e.PUT(joinPath("parse-sources"), HandleParseSourceGet)
-  // e.DELETE(joinPath("parse-sources"), HandleParseSourceGet)
+  /* handle "ParseSource" */
+  // e.POST(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceFind)
+  // e.GET(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceGet)
+  e.PUT(joinPathV1("search-targets/:search-target/parse-sources/:parse-source"), HandleParseSourceCreate)
+  // e.DELETE(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceDelete)
+
+  /* handle "File" */
+  e.POST(joinPathV1("files"), HandleFileFind)
 
   e.Logger.Fatal(e.Start(":"+config.Config.Server.Port))
 }
 
-func joinPath(pattern string) string {
+func joinPathV1(pattern string) string {
   if strings.HasPrefix(pattern, "/"){
      return apiPathV1 + pattern[1:]
   }
