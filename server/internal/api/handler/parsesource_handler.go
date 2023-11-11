@@ -1,37 +1,72 @@
 package handler
 
 import (
-	"fmt"
-	"io"
+	"log"
 	"net/http"
+
+	"github.com/ek-170/loglyzer/internal/domain/repository"
+	"github.com/ek-170/loglyzer/internal/usecase"
+	"github.com/labstack/echo/v4"
 )
 
-type ParseSourceHandler interface {
-	HandleParseSource(w http.ResponseWriter, r *http.Request)
-}
-
-type parseSourceHandler struct {
-}
-
-func NewParseSourceHandler() ParseSourceHandler {
-	return &parseSourceHandler{}
-}
-
-func (lh *parseSourceHandler) HandleParseSource(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-    case http.MethodGet:
-        getParseSource(w, r)
-    // case http.MethodPost:
-    //     findParseSource(w, r)
-    // case http.MethodPut:
-    //     upsertParseSource(w, r)
-    // case http.MethodDelete:
-    //     deleteParseSource(w, r)
-	default:
-		http.Error(w, fmt.Sprintf("Method %s is not allowed", r.Method), 405)
+func HandleParseSourceFind(c echo.Context) error {
+	log.Println("Start finding ParseSource.")
+	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
+	q := c.QueryParam("q")
+	log.Printf("query keyword is \"%s\"", q)
+	st, err := usecase.FindParseSources(q)
+	if err != nil {
+	  return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+	return c.JSON(http.StatusOK, st)
 }
 
-func getParseSource(w http.ResponseWriter, _ *http.Request) {
-  io.WriteString(w, "ParseSource World!\n")
+func HandleParseSourceGet(c echo.Context) error {
+	log.Println("Start fetching ParseSource.")
+	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
+	name := c.Param("name")
+	log.Printf("specified name is \"%s\"", name)
+	st, err := usecase.GetParseSource(name)
+	if err != nil {
+	  return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, st)
+}
+type ParseSourceCreateRequest struct {
+	File string     `json:"file"`
+	MultiLine bool  `json:"multiLine"`
+	GrokId string   `json:"grokId"`
+}
+
+func HandleParseSourceCreate(c echo.Context) error {
+	log.Println("Start creating ParseSource.")
+	req := ParseSourceCreateRequest{}
+  if err := c.Bind(&req); err != nil {
+    return c.JSON(http.StatusBadRequest, "bad request")
+  }
+	searchTarget := c.Param("search-target")
+	parseSource := c.Param("parse-source")
+	log.Printf("parsing target file name is \"%s\"", req.File)
+	log.Printf("MultiLine setting enabled is \"%t\"", req.MultiLine)
+	log.Printf("Grok pattern name use for parsing is \"%s\"", req.GrokId)
+	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
+	log.Printf("specified New ParseSource name is \"%s\"", parseSource)
+	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
+	err := usecase.CreateParseSource(searchTarget, parseSource, req.MultiLine, req.File, req.GrokId)
+	if err != nil {
+	  return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusCreated)
+}
+
+func HandleParseSourceDelete(c echo.Context) error {
+	log.Println("Start deleting ParseSource.")
+	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
+	name := c.Param("name")
+	log.Printf("specified name is \"%s\"", name)
+	err := usecase.DeleteParseSource(name)
+	if err != nil {
+	  return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusOK)
 }

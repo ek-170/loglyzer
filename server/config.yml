@@ -1,5 +1,6 @@
 server:
   port: "8080"
+  logDir: "/logs"
 fullTextSearch:
   ftsScheme : "http"
   ftsHost: "es01"

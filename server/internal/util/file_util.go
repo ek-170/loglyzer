@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// this method ignore subdirectory
 func ScanFiles(dir string) ([]string, error) {
     files, err := os.ReadDir(dir)
     if err != nil {
@@ -19,4 +20,21 @@ func ScanFiles(dir string) ([]string, error) {
         }
     }
     return paths, nil
+}
+
+func SearchFile(dir string, q string) (string, error) {
+    res := ""
+    files, err := ScanFiles(dir)
+    if err != nil {
+        return res, err
+    }
+    if len(files) == 0 {
+        return res, errors.New("there is no file you want to parse")
+    }
+    for _, f := range files {
+        if f == q {
+            res = f
+        }
+    }
+    return res, nil
 }

@@ -9,6 +9,7 @@ import (
 
 type Server struct {
   Port string `yaml:"port"`
+  LogDir string `yaml:"logDir"`
 }
 
 type FullTextSearch struct {

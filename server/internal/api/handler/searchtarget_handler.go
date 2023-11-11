@@ -49,7 +49,7 @@ func HandleSearchTargetCreate(c echo.Context) error {
 func HandleSearchTargetDelete(c echo.Context) error {
 	log.Println("Start deleting SearchTarget.")
 	usecase := usecase.NewSearchTargetUsecase(repository.NewEsSearchTargetRepository())
-	name := c.Param("name")
+	name := c.Param("search-target")
 	log.Printf("specified SearchTarget name is \"%s\"", name)
 	err := usecase.DeleteSearchTarget(name)
 	if err != nil {

@@ -32,15 +32,11 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
     return nil, errors.New(es.HandleElasticsearchError(err))
   }
   var grokPatterns []*GrokPattern = []*GrokPattern{}
-  for name, pipeline := range res {
-    // if q is empty, return all grok patterns
-    // if(q != "" && q != name){
-    //   continue
-    // }
+  for id, pipeline := range res {
     for _, processor := range pipeline.Processors {
       if processor.Grok != nil {
         grokPattern := &GrokPattern{
-          Name: name,
+          Id: id,
           Pattern: processor.Grok.Patterns[0],
         }
         grokPatterns = append(grokPatterns, grokPattern)
@@ -57,12 +53,12 @@ func sortGrokPatterns(arr []*GrokPattern, asc bool) ([]*GrokPattern){
 	}
   if asc {
     sort.Slice(arr, func(i, j int) bool {
-      return arr[i].Name < arr[j].Name
+      return arr[i].Id < arr[j].Id
     })
   } else {
     // desc
     sort.Slice(arr, func(i, j int) bool {
-      return arr[i].Name > arr[j].Name
+      return arr[i].Id > arr[j].Id
     })
   }
 	return arr

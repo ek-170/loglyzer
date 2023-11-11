@@ -2,12 +2,12 @@ package repository
 
 type SearchTargetRepository interface {
 	FindSearchTargets(q string) ([]*SearchTarget, error)
-	GetSearchTarget(name string) (*SearchTarget, error)
-	CreateSearchTarget(name string) error
-	DeleteSearchTarget(name string) error
+	GetSearchTarget(id string) (*SearchTarget, error)
+	CreateSearchTarget(id string) error
+	DeleteSearchTarget(id string) error
 }
 
 type SearchTarget struct {
-	Name string     `json:"name"`
+	Id string     `json:"id"`
 	// ParseSources []*ParseSource
 }
