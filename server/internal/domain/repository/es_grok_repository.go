@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"log"
 	"sort"
-  "errors"
 
 	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
 )
@@ -26,7 +26,7 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
   }else {
     q = "*" + q + "*"
   }
-  res, err := client.Ingest.GetPipeline().Id(q).Do(context.TODO())
+  res, err := client.Ingest.GetPipeline().Id(q).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
     return nil, errors.New(es.HandleElasticsearchError(err))

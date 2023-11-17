@@ -32,7 +32,7 @@ func StartMainServer() {
   /* handle "ParseSource" */
   // e.POST(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceFind)
   // e.GET(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceGet)
-  e.PUT(joinPathV1("search-targets/:search-target/parse-sources/:parse-source"), HandleParseSourceCreate)
+  e.POST(joinPathV1("search-targets/:search-target/parse-sources"), HandleParseSourceCreate)
   // e.DELETE(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceDelete)
 
   /* handle "File" */

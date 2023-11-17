@@ -3,7 +3,7 @@ package repository
 type ParseSourceRepository interface {
 	FindParseSources(q string) ([]*ParseSource, error)
 	GetParseSource(name string) (*ParseSource, error)
-	CreateParseSource(searchTarget string, parseSource string, multiLine bool, fileName string, grokId string) (error)
+	CreateParseSource(searchTarget string, multiLine bool, fileName string, grokId string) (error)
 	DeleteParseSource(name string) error
 }
 

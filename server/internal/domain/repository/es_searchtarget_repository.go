@@ -28,7 +28,7 @@ func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget,
   }else {
     q = "*" + q + "*"
   }
-  res, err := client.Cat.Aliases().Name(q).Do(context.TODO())
+  res, err := client.Cat.Aliases().Name(q).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "cat Aliases")
     return nil, errors.New(es.HandleElasticsearchError(err))
@@ -86,7 +86,7 @@ func (eg EsSearchTargetRepository) GetSearchTarget(id string) (*SearchTarget, er
   if err != nil {
     return nil, err
   }
-  res, err := client.Cat.Aliases().Name(id).Do(context.TODO())
+  res, err := client.Cat.Aliases().Name(id).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get Aliases")
     return nil, errors.New(es.HandleElasticsearchError(err))
@@ -111,12 +111,12 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(id string) error {
   // to create Alias, also need to exist Index
   // so create placeholder Index which is not used
   indexName := id + "_placeholder"
-  _, err = client.Indices.Create(indexName).Do(context.TODO())
+  _, err = client.Indices.Create(indexName).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create placeholder Index")
     return errors.New(es.HandleElasticsearchError(err))
   }
-  _, err = client.Indices.PutAlias(indexName, id).Do(context.TODO())
+  _, err = client.Indices.PutAlias(indexName, id).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
     return errors.New(es.HandleElasticsearchError(err))
@@ -124,7 +124,7 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(id string) error {
   indexName = id + "_parsesource"
   _, err = client.Indices.Create(indexName).
     Mappings(es.BuildParseSourceMapping()).
-    Do(context.TODO())
+    Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create ParseSource Index")
     return errors.New(es.HandleElasticsearchError(err))
@@ -145,14 +145,14 @@ func (eg EsSearchTargetRepository) DeleteSearchTarget(id string) error {
     return err
   }
   // get all Indices name
-  res, err := client.Indices.GetAlias().Name(id).Do(context.TODO())
+  res, err := client.Indices.GetAlias().Name(id).Do(context.Background())
   if err != nil {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get all indices")
     return errors.New(es.HandleElasticsearchError(err))
   }
   // delete all Indices
   for key := range res {
-    _, err = client.Indices.Delete(key).Do(context.TODO())
+    _, err = client.Indices.Delete(key).Do(context.Background())
     if err != nil {
       log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete all indices")
       return errors.New(es.HandleElasticsearchError(err))

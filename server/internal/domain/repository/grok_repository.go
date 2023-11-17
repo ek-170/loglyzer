@@ -5,6 +5,8 @@ type GrokRepository interface {
 }
 
 type GrokPattern struct {
-	Id string     `json:"id"`
+	Id string       `json:"id"`
+  // Name string     `json:"name"`
 	Pattern string  `json:"pattern"`
+  // Discription string `json:"discription`
 }

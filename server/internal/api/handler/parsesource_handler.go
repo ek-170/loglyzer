@@ -45,14 +45,12 @@ func HandleParseSourceCreate(c echo.Context) error {
     return c.JSON(http.StatusBadRequest, "bad request")
   }
 	searchTarget := c.Param("search-target")
-	parseSource := c.Param("parse-source")
 	log.Printf("parsing target file name is \"%s\"", req.File)
 	log.Printf("MultiLine setting enabled is \"%t\"", req.MultiLine)
 	log.Printf("Grok pattern name use for parsing is \"%s\"", req.GrokId)
 	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
-	log.Printf("specified New ParseSource name is \"%s\"", parseSource)
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	err := usecase.CreateParseSource(searchTarget, parseSource, req.MultiLine, req.File, req.GrokId)
+	err := usecase.CreateParseSource(searchTarget, req.MultiLine, req.File, req.GrokId)
 	if err != nil {
 	  return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
