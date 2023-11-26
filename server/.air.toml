@@ -5,7 +5,7 @@
 root = "."
 # Optional! If `watch_dir` is empty, use `root`.
 watch_dir = ""
-tmp_dir = "./dev/tmp"
+tmp_dir = "./tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
@@ -13,7 +13,7 @@ cmd = "go build -gcflags \"all=-N -l\" -o ./dev/build/main ./cmd/loglyzer"
 # Binary file yields from `cmd`.
 bin = "./dev/build/main"
 # Customize binary.
-full_bin = "APP_ENV=dev APP_USER=air dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec --continue ./dev/build/main"
+full_bin = "BASE_PATH=/app APP_ENV=dev APP_USER=air dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec --continue ./dev/build/main"
 # This log file places in your tmp_dir.
 log = "air_errors.log"
 # Watch these filename extensions.

@@ -2,7 +2,8 @@ package handler
 
 import (
 	"strings"
-
+  
+  "github.com/labstack/echo-contrib/pprof"
 	"github.com/ek-170/loglyzer/internal/config"
 	"github.com/labstack/echo/v4"
 )
@@ -14,13 +15,13 @@ const (
 func StartMainServer() {
 
   e := echo.New()
-
+  pprof.Register(e)
   /* handle "hello" */
   e.GET(joinPathV1("hello"), HandleHello)
 
   /* handle "Grok" */
   e.POST(joinPathV1("grok-patterns"), HandleGrokFind)
-  // e.PUT(joinPathV1("grok-patterns"), HandleGrokPut)
+  e.PUT(joinPathV1("grok-patterns/:grok-id"), HandleGrokCreate)
   // e.DELETE(joinPathV1("grok-patterns"), HandleGrokDelete)
 
   /* handle "SearchTarget" */
@@ -31,7 +32,7 @@ func StartMainServer() {
 
   /* handle "ParseSource" */
   // e.POST(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceFind)
-  // e.GET(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceGet)
+  e.GET(joinPathV1("search-targets/:search-targetsparse-sources/:parse-source"), HandleParseSourceGet)
   e.POST(joinPathV1("search-targets/:search-target/parse-sources"), HandleParseSourceCreate)
   // e.DELETE(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceDelete)
 

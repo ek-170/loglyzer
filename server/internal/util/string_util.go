@@ -1,6 +1,8 @@
 package util
 
 import (
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -28,4 +30,18 @@ func FindMatchingStrings(targets []string, q string) []string {
 	}
 
 	return matchingStrings
+}
+
+func ExtractAndConvertToInteger(s string) int {
+	re := regexp.MustCompile(`(\d+)`)
+	matches := re.FindStringSubmatch(s)
+
+	if len(matches) >= 2 {
+		result, err := strconv.Atoi(matches[1])
+		if err != nil {
+			return 0
+		}
+		return result
+	}
+  return 0
 }

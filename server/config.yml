@@ -1,3 +1,5 @@
+path:
+  patterns: "patterns"
 server:
   port: "8080"
   logDir: "/logs"

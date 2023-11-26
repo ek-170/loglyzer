@@ -7,6 +7,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Path struct {
+  Base string
+  Patterns string `yaml:"patterns"`
+}
+
 type Server struct {
   Port string `yaml:"port"`
   LogDir string `yaml:"logDir"`
@@ -19,6 +24,7 @@ type FullTextSearch struct {
 }
 
 type ConfigList struct {
+  Path Path                     `yaml:"path"`
 	Server Server                 `yaml:"server"`
   FullTextSearch FullTextSearch `yaml:"fullTextSearch"`
 }
@@ -27,6 +33,7 @@ var Config ConfigList
 
 func init() {
 	LoadConfig("config.yml")
+  setBasePath()
 }
 
 func LoadConfig(fileName string) {
@@ -45,4 +52,10 @@ func LoadConfig(fileName string) {
   if err != nil {
     log.Fatal("config.yml decoding error:", err)
   }
+}
+
+const EnvBasePathConfig = "BASE_PATH"
+
+func setBasePath(){
+  Config.Path.Base = os.Getenv(EnvBasePathConfig)
 }

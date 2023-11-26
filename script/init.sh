@@ -22,7 +22,8 @@ for json_file in "$ingest_dir"/*.json; do
 
         curl_command="curl -XPUT -s \"$elasticsearch_url/$path\" -H \"Content-Type: application/json\" -d @$json_file"
         echo "Executing: $curl_command"
-        eval "$curl_command" | jq
+        eval "$curl_command"
+        echo ""
         printf "Completed: %s\n" "$filename"
     fi
 done

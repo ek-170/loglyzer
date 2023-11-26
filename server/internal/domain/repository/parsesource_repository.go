@@ -9,7 +9,8 @@ type ParseSourceRepository interface {
 
 // ParseSource is information of parsed log's index
 type ParseSource struct {
-	Name string  `json:"name"`
+	Id string    `json:"id"`    // Doc ID
+	Name string  `json:"name"`  // parse target file name
 	Index string `json:"index"` // save target Index name
-	Order int16  `json:"order"`// use to name index
+	Order int16  `json:"order"` // use to name index
 }

@@ -78,10 +78,12 @@ services:
       es01:
         condition: service_healthy
     volumes:
-      - ../server:/app
-      - ../logs:/logs
+      - ../../server:/app
+      - ../../logs:/logs
     mem_limit: ${API_MEM_LIMIT}
     restart: always
+    environment:
+      - BASE_PATH=${API_BASE_DIR}
     security_opt:
       - apparmor:unconfined
     cap_add:

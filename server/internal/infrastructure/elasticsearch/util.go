@@ -5,6 +5,17 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 )
 
+func BuildGrokPipeline(pattern string, patternDefs map[string]string, description string) *types.ProcessorContainer {
+	grokProcessor := types.NewGrokProcessor()
+	grokProcessor.Field = "message"
+	grokProcessor.PatternDefinitions = patternDefs
+	grokProcessor.Patterns = []string{pattern}
+	grokProcessor.Description = &description
+	pipeline := types.NewProcessorContainer()
+	pipeline.Grok = grokProcessor
+	return pipeline
+}
+
 func BuildAlias(name string) map[string]types.Alias {
 	alias := make(map[string]types.Alias, 1)
 	alias[name] = types.Alias{}

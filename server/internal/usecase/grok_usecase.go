@@ -21,3 +21,11 @@ func (gu GrokUsecase) FindGrokPatterns(q string) ([]*repository.GrokPattern, err
   }
   return result, nil
 }
+
+func (gu GrokUsecase) CreateGrokPatterns(id string, pattern string, patternDefs map[string]string, description string) error {
+  err := gu.grokRepository.CreateGrokPattern(id, pattern, patternDefs, description)
+  if err != nil {
+    return err
+  }
+  return nil
+}

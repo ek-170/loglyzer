@@ -24,8 +24,11 @@ go.work
 .idea/*
 server/dev/*
 server/dev
+server/tmp/*
+server/tmp
 server/.vscode
 .vscode/*
 logs/*
 logs
 misc
+.DS_Store

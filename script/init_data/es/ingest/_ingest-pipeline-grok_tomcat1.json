@@ -9,7 +9,8 @@
         "pattern_definitions": {
           "MESSAGE": "[\\s\\S]*"
         },
-        "ecs_compatibility":"v1"
+        "ecs_compatibility":"v1",
+        "description": "APサーバーのログフォーマットです。"
       }
     }
   ]

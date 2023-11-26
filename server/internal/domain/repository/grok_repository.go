@@ -2,11 +2,12 @@ package repository
 
 type GrokRepository interface {
 	FindGrokPatterns(q string) ([]*GrokPattern, error)
+	CreateGrokPattern(id string, pattern string, patternDefs map[string]string, description string) error
 }
 
 type GrokPattern struct {
 	Id string       `json:"id"`
-  // Name string     `json:"name"`
 	Pattern string  `json:"pattern"`
-  // Discription string `json:"discription`
+	PatternDefs map[string]string `json:"pattern_definitions"`
+  Description string `json:"description"`
 }

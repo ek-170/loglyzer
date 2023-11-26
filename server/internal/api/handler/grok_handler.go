@@ -21,3 +21,25 @@ func HandleGrokFind(c echo.Context) error {
   }
   return  c.JSON(http.StatusOK, grok)
 }
+
+type GrokCreateRequest struct {
+	Pattern string  `json:"pattern"`
+	PatternDefs map[string]string `json:"pattern_definitions"`
+  Description string `json:"description"`
+}
+
+func HandleGrokCreate(c echo.Context) error {
+	log.Println("Start creating Grok Pattern.")
+	req := GrokCreateRequest{}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, "bad request")
+	}
+	grokId := c.Param("grok-id")
+	log.Printf("Grok Pattern is \"%s\"", req.Pattern)
+	usecase := usecase.NewGrokUsecase(repository.NewEsGrokRepository())
+	err := usecase.CreateGrokPatterns(grokId, req.Pattern, req.PatternDefs, req.Description)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusCreated)
+}

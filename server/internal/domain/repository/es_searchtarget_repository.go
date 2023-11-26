@@ -121,8 +121,8 @@ func (eg EsSearchTargetRepository) CreateSearchTarget(id string) error {
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
     return errors.New(es.HandleElasticsearchError(err))
   }
-  indexName = id + "_parsesource"
-  _, err = client.Indices.Create(indexName).
+  psInfoIndexName := "ps_" + id + "_info"
+  _, err = client.Indices.Create(psInfoIndexName).
     Mappings(es.BuildParseSourceMapping()).
     Do(context.Background())
   if err != nil {
@@ -151,6 +151,7 @@ func (eg EsSearchTargetRepository) DeleteSearchTarget(id string) error {
     return errors.New(es.HandleElasticsearchError(err))
   }
   // delete all Indices
+  // after delete all Indices, automatically Alias has deleted
   for key := range res {
     _, err = client.Indices.Delete(key).Do(context.Background())
     if err != nil {
@@ -158,6 +159,12 @@ func (eg EsSearchTargetRepository) DeleteSearchTarget(id string) error {
       return errors.New(es.HandleElasticsearchError(err))
     }
   }
-  // after delete all Indices, automatically Alias has deleted
+  psInfoIndexName := "ps_" + id + "_info"
+  _, err = client.Indices.Delete(psInfoIndexName).Do(context.Background())
+  if err != nil {
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Index")
+    return errors.New(es.HandleElasticsearchError(err))
+  }
+
   return nil
 }

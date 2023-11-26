@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/ingest/getpipeline"
 )
 
 type EsGrokRepository struct {}
@@ -31,6 +32,11 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "GET Pipelines")
     return nil, errors.New(es.HandleElasticsearchError(err))
   }
+  grokPatterns := ExtractGrokPatterns(res)
+  return sortGrokPatterns(grokPatterns, true), nil
+}
+
+func ExtractGrokPatterns(res getpipeline.Response) []*GrokPattern {
   var grokPatterns []*GrokPattern = []*GrokPattern{}
   for id, pipeline := range res {
     for _, processor := range pipeline.Processors {
@@ -39,11 +45,17 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
           Id: id,
           Pattern: processor.Grok.Patterns[0],
         }
+        if processor.Grok.PatternDefinitions != nil {
+          grokPattern.PatternDefs = processor.Grok.PatternDefinitions
+        }
+        if processor.Grok.Description != nil {
+          grokPattern.Description = *processor.Grok.Description
+        }
         grokPatterns = append(grokPatterns, grokPattern)
       }
     }
   }
-  return sortGrokPatterns(grokPatterns, true), nil
+  return grokPatterns
 }
 
 // TODO: change "asc" to enum
@@ -62,4 +74,19 @@ func sortGrokPatterns(arr []*GrokPattern, asc bool) ([]*GrokPattern){
     })
   }
 	return arr
+}
+
+func (eg EsGrokRepository) CreateGrokPattern(id string, pattern string, patternDefs map[string]string, description string) error {
+  client, err := es.CreateElasticsearchClient()
+  if err != nil {
+    return err
+  }
+
+  grok := es.BuildGrokPipeline(pattern, patternDefs, description)
+  _, err = client.Ingest.PutPipeline(id).Processors(*grok).Do(context.Background())
+  if err != nil {
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Pipeline")
+    return errors.New(es.HandleElasticsearchError(err))
+  }
+  return nil
 }
