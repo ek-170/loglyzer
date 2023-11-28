@@ -232,6 +232,7 @@ func parseLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
   for scanner.Scan() {
 		line := scanner.Text()
 		lineNumber++
+		log.Println(lineNumber)
 
 		if strings.TrimSpace(line) == "" {
 			// ignore brank line
@@ -240,11 +241,11 @@ func parseLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 		addBulk(bulk, lineNumber, line, file.Name())
 	}
 
-  _, err := bulk.Index(psIndexName).Pipeline(grokId).Do(context.Background())
-	if err != nil {
-		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "Bulk Index")
-		return errors.New(es.HandleElasticsearchError(err))
-	}
+  // _, err := bulk.Index(psIndexName).Pipeline(grokId).Do(context.Background())
+	// if err != nil {
+	// 	log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "Bulk Index")
+	// 	return errors.New(es.HandleElasticsearchError(err))
+	// }
 	// if res != nil {
 	// 	for _, i := range res.Items {
 	// 		for _, v := range i {
@@ -369,9 +370,9 @@ func parseMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 }
 
 func addBulk(bulk *bulk.Bulk, lineNumber int, message string, file string) {
-	log := Log{LineNum: lineNumber, Message: message, File: file}
+	l := Log{LineNum: lineNumber, Message: message, File: file}
 	op := types.NewIndexOperation()
-	bulk.IndexOp(*op, log)
+	bulk.IndexOp(*op, l)
 }
 
 func (eg EsParseSourceRepository) DeleteParseSource(name string) error {
