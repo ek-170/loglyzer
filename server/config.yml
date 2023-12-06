@@ -1,5 +1,8 @@
 path:
   patterns: "patterns"
+parser:
+  worker: 4
+  multilineWorker: 3
 server:
   port: "8080"
   logDir: "/logs"
@@ -7,3 +10,4 @@ fullTextSearch:
   ftsScheme : "http"
   ftsHost: "es01"
   ftsPort: "9200"
+  ftsBulkUnit: 10000

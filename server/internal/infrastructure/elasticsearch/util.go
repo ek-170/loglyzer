@@ -32,11 +32,11 @@ func BuildParseSourceMapping() *types.TypeMapping {
 	return mapping
 }
 
-func BuildParseSourceSort() *types.SortCombinations {
+func BuildParseSourceSort(f string) *types.SortCombinations {
 	sort := make(map[string]*types.FieldSort, 1)
 	fSort := types.NewFieldSort()
 	fSort.Order = &sortorder.Desc
-	sort["order"] = fSort
+	sort[f] = fSort
 	var sortComb types.SortCombinations = sort
 	return &sortComb
 }
@@ -45,4 +45,14 @@ func BuildParseSourceFields() types.FieldAndFormat {
 	field := types.NewFieldAndFormat()
 	field.Field = "*"
 	return *field
+}
+
+func BuildParseSourceWildcardQuery(v string, f string) map[string]types.WildcardQuery {
+	wq := types.NewWildcardQuery()
+	b := true
+	wq.CaseInsensitive = &b
+	wq.Value = &v
+	qMap := make(map[string]types.WildcardQuery, 1)
+	qMap[f] = *wq
+	return qMap
 }

@@ -17,7 +17,7 @@ func NewEsSearchTargetRepository() EsSearchTargetRepository{
 }
 
 // Not allow multiple "q" separated by space
-func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget, error){
+func (est EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget, error){
   client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
@@ -43,10 +43,16 @@ func (eg EsSearchTargetRepository) FindSearchTargets(q string) ([]*SearchTarget,
     if containsSearchTarget(searchTargets, *alias.Alias){
       continue
     }
+    // parsesource info index name
+    infoIndexName := "ps_" + *alias.Alias + "_info"
+    parseSources, err := SearchParseSources(client, "", infoIndexName)
+    if err != nil {
+      return nil, err
+    }
     if *alias.Alias != "" {
       searchTarget := &SearchTarget{
         Id:  *alias.Alias,
-        // parseSource
+        ParseSources: parseSources,
       }
       searchTargets = append(searchTargets, searchTarget)
     }
@@ -81,7 +87,7 @@ func sortSearchTarget(arr []*SearchTarget, asc bool) []*SearchTarget {
 	return arr
 }
 
-func (eg EsSearchTargetRepository) GetSearchTarget(id string) (*SearchTarget, error){
+func (est EsSearchTargetRepository) GetSearchTarget(id string) (*SearchTarget, error){
   client, err := es.CreateElasticsearchClient()
   if err != nil {
     return nil, err
@@ -91,15 +97,20 @@ func (eg EsSearchTargetRepository) GetSearchTarget(id string) (*SearchTarget, er
     log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get Aliases")
     return nil, errors.New(es.HandleElasticsearchError(err))
   }
-  var st *SearchTarget = &SearchTarget{}
-  st = &SearchTarget{
+  // parsesource info index name
+  infoIndexName := "ps_" + *res[0].Alias + "_info"
+  parseSources, err := SearchParseSources(client, "", infoIndexName)
+  if err != nil {
+    return nil, err
+  }
+  st := &SearchTarget{
     Id: *res[0].Alias,
-    // add parseSource
+    ParseSources: parseSources,
   }
   return st, nil
 }
 
-func (eg EsSearchTargetRepository) CreateSearchTarget(id string) error {
+func (est EsSearchTargetRepository) CreateSearchTarget(id string) error {
   err := validateSearchTargetId(id)
   if err != nil {
     return err
@@ -139,7 +150,7 @@ func validateSearchTargetId(name string) error {
   return nil
 }
 
-func (eg EsSearchTargetRepository) DeleteSearchTarget(id string) error {
+func (est EsSearchTargetRepository) DeleteSearchTarget(id string) error {
   client, err := es.CreateElasticsearchClient()
   if err != nil {
     return err

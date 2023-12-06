@@ -43,3 +43,14 @@ func HandleGrokCreate(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusCreated)
 }
+
+func HandleGrokDelete(c echo.Context) error {
+	log.Println("Start deleting Grok Pattern.")
+	grokId := c.Param("grok-id")
+	usecase := usecase.NewGrokUsecase(repository.NewEsGrokRepository())
+	err := usecase.DeleteGrokPatterns(grokId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusCreated)
+}

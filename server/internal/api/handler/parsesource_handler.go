@@ -14,19 +14,9 @@ func HandleParseSourceFind(c echo.Context) error {
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
 	q := c.QueryParam("q")
 	log.Printf("query keyword is \"%s\"", q)
-	st, err := usecase.FindParseSources(q)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, st)
-}
-
-func HandleParseSourceGet(c echo.Context) error {
-	log.Println("Start fetching ParseSource.")
-	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	parseSource := c.Param("parse-source")
-	log.Printf("specified ParseSource is \"%s\"", parseSource)
-	st, err := usecase.GetParseSource(parseSource)
+	searchTarget := c.Param("search-target")
+	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
+	st, err := usecase.FindParseSources(q, searchTarget)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -61,9 +51,11 @@ func HandleParseSourceCreate(c echo.Context) error {
 func HandleParseSourceDelete(c echo.Context) error {
 	log.Println("Start deleting ParseSource.")
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	name := c.Param("name")
-	log.Printf("specified name is \"%s\"", name)
-	err := usecase.DeleteParseSource(name)
+	searchTarget := c.Param("search-target")
+	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
+	id := c.Param("parse-source-id")
+	log.Printf("specified ParseSource info ID is \"%s\"", id)
+	err := usecase.DeleteParseSource(id, searchTarget)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

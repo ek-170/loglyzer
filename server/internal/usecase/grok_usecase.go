@@ -29,3 +29,11 @@ func (gu GrokUsecase) CreateGrokPatterns(id string, pattern string, patternDefs 
   }
   return nil
 }
+
+func (gu GrokUsecase) DeleteGrokPatterns(id string) error {
+  err := gu.grokRepository.DeleteGrokPattern(id)
+  if err != nil {
+    return err
+  }
+  return nil
+}

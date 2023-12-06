@@ -12,8 +12,13 @@ type Path struct {
   Patterns string `yaml:"patterns"`
 }
 
+type Parser struct {
+  Worker int          `yaml:"worker"`
+  MultilineWorker int `yaml:"multilineWorker"`
+}
+
 type Server struct {
-  Port string `yaml:"port"`
+  Port string   `yaml:"port"`
   LogDir string `yaml:"logDir"`
 }
 
@@ -21,10 +26,12 @@ type FullTextSearch struct {
   Schme string `yaml:"ftsScheme"`
   Host string  `yaml:"ftsHost"`
   Port string  `yaml:"ftsPort"`
+  BulkUnit int `yaml:"ftsBulkUnit"`
 }
 
 type ConfigList struct {
   Path Path                     `yaml:"path"`
+  Parser Parser                 `yaml:"parser"`
 	Server Server                 `yaml:"server"`
   FullTextSearch FullTextSearch `yaml:"fullTextSearch"`
 }

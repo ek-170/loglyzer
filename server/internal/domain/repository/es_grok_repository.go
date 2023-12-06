@@ -22,7 +22,7 @@ func (eg EsGrokRepository) FindGrokPatterns(q string) ([]*GrokPattern, error){
     return nil, err
   }
   if q == "" {
-    // retrieve all aliases
+    // retrieve all pipelines
     q = "*"
   }else {
     q = "*" + q + "*"
@@ -89,4 +89,18 @@ func (eg EsGrokRepository) CreateGrokPattern(id string, pattern string, patternD
     return errors.New(es.HandleElasticsearchError(err))
   }
   return nil
+}
+
+func (eg EsGrokRepository) DeleteGrokPattern(id string) error {
+	client, err := es.CreateElasticsearchClient()
+	if err != nil {
+		return err
+	}
+  _, err = client.Ingest.DeletePipeline(id).Do(context.Background())
+  if err != nil {
+    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Pipeline")
+    return errors.New(es.HandleElasticsearchError(err))
+  }
+
+	return nil
 }

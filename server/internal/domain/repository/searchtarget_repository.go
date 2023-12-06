@@ -8,6 +8,6 @@ type SearchTargetRepository interface {
 }
 
 type SearchTarget struct {
-	Id string     `json:"id"`
-	// ParseSources []*ParseSource
+	Id string                   `json:"id"`
+	ParseSources []*ParseSource `json:"parseSources"`
 }

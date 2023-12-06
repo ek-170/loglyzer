@@ -22,7 +22,7 @@ func StartMainServer() {
   /* handle "Grok" */
   e.POST(joinPathV1("grok-patterns"), HandleGrokFind)
   e.PUT(joinPathV1("grok-patterns/:grok-id"), HandleGrokCreate)
-  // e.DELETE(joinPathV1("grok-patterns"), HandleGrokDelete)
+  e.DELETE(joinPathV1("grok-patterns/:grok-id"), HandleGrokDelete)
 
   /* handle "SearchTarget" */
   e.POST(joinPathV1("search-targets"), HandleSearchTargetFind)
@@ -31,10 +31,9 @@ func StartMainServer() {
   e.DELETE(joinPathV1("search-targets/:search-target"), HandleSearchTargetDelete)
 
   /* handle "ParseSource" */
-  // e.POST(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceFind)
-  e.GET(joinPathV1("search-targets/:search-targetsparse-sources/:parse-source"), HandleParseSourceGet)
-  e.POST(joinPathV1("search-targets/:search-target/parse-sources"), HandleParseSourceCreate)
-  // e.DELETE(joinPathV1("search-targets/:search-targets-name/parse-sources/:parse-sources-name"), HandleParseSourceDelete)
+  e.POST(joinPathV1("search-targets/:search-target/parse-sources"), HandleParseSourceFind)
+  e.POST(joinPathV1("search-targets/:search-target/parse-sources/new"), HandleParseSourceCreate)
+  e.DELETE(joinPathV1("search-targets/:search-target/parse-sources/:parse-source-id"), HandleParseSourceDelete)
 
   /* handle "File" */
   e.POST(joinPathV1("files"), HandleFileFind)

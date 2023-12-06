@@ -14,16 +14,8 @@ func NewParseSourceUsecase(parseSourceRepository repository.ParseSourceRepositor
 	}
 }
 
-func (psu ParseSourceUsecase) FindParseSources(q string) ([]*repository.ParseSource, error) {
-	result, err := psu.parseSourceRepository.FindParseSources(q)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func (psu ParseSourceUsecase) GetParseSource(name string) (*repository.ParseSource, error) {
-	result, err := psu.parseSourceRepository.GetParseSource(name)
+func (psu ParseSourceUsecase) FindParseSources(q string, searchTarget string) ([]*repository.ParseSource, error) {
+	result, err := psu.parseSourceRepository.FindParseSources(q, searchTarget)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +31,8 @@ func (psu ParseSourceUsecase) CreateParseSource(
 	return nil
 }
 
-func (psu ParseSourceUsecase) DeleteParseSource(name string) error {
-	err := psu.parseSourceRepository.DeleteParseSource(name)
+func (psu ParseSourceUsecase) DeleteParseSource(id string, searchTarget string) error {
+	err := psu.parseSourceRepository.DeleteParseSource(id, searchTarget)
 	if err != nil {
 		return err
 	}

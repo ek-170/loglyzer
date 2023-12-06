@@ -3,6 +3,7 @@ package repository
 type GrokRepository interface {
 	FindGrokPatterns(q string) ([]*GrokPattern, error)
 	CreateGrokPattern(id string, pattern string, patternDefs map[string]string, description string) error
+	DeleteGrokPattern(id string) error
 }
 
 type GrokPattern struct {
