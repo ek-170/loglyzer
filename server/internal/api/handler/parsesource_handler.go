@@ -24,9 +24,15 @@ func HandleParseSourceFind(c echo.Context) error {
 }
 
 type ParseSourceCreateRequest struct {
-	File      string `json:"file"`
-	MultiLine bool   `json:"multiLine"`
-	GrokId    string `json:"grokId"`
+	FileReadMode string `json:"fileReadMode"`
+	SshKeyPath   string `json:"sshKeyPath"`
+	UserName     string `json:"userName"`
+	Password     string `json:"password"`
+	Host         string `json:"host"`
+	Port         int    `json:"port"`
+	FilePath     string `json:"filePath"`
+	MultiLine    bool   `json:"multiLine"`
+	GrokId       string `json:"grokId"`
 }
 
 func HandleParseSourceCreate(c echo.Context) error {
@@ -37,11 +43,11 @@ func HandleParseSourceCreate(c echo.Context) error {
 	}
 	searchTarget := c.Param("search-target")
 	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
-	log.Printf("parsing target file name is \"%s\"", req.File)
+	log.Printf("parsing target file path is \"%s\"", req.FilePath)
 	log.Printf("MultiLine setting enabled is \"%t\"", req.MultiLine)
 	log.Printf("Grok pattern name use for parsing is \"%s\"", req.GrokId)
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	err := usecase.CreateParseSource(searchTarget, req.MultiLine, req.File, req.GrokId)
+	err := usecase.CreateParseSource(searchTarget, req.MultiLine, req.FilePath, req.GrokId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

@@ -5,8 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -15,7 +15,7 @@ import (
 
 	"github.com/ek-170/loglyzer/internal/config"
 	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
-	"github.com/ek-170/loglyzer/internal/util"
+	"github.com/ek-170/loglyzer/internal/infrastructure/filereader"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
@@ -81,21 +81,16 @@ type Log struct {
 }
 
 func (ep EsParseSourceRepository) CreateParseSource(
-	searchTarget string, multiLine bool, fileName string, grokId string) error {
+	searchTarget string, multiLine bool, filePath string, grokId string) error {
 	
 	startTime := time.Now()
 
-	searchedFile, err := util.SearchFile(config.Config.Server.LogDir, fileName)
+
+	fr := filereader.LocalFileReader{}
+	file, err := fr.ReadFile()
 	if err != nil {
 		return err
 	}
-	fullPath := config.Config.Server.LogDir + "/" + searchedFile
-	file, err := os.Open(fullPath)
-	if err != nil {
-		log.Println("failed to open file")
-		return err
-	}
-	defer file.Close()
 
 	client, err := es.CreateElasticsearchClient()
 	if err != nil {
@@ -124,6 +119,7 @@ func (ep EsParseSourceRepository) CreateParseSource(
 		psIndexName = "ps_" + searchTarget + "_" + strconv.Itoa(int(order))
 	}
 
+	fileName := filepath.Base(filePath)
 	ps := ParseSource{
 		Name:  fileName,
 		Index: psIndexName,
@@ -150,9 +146,9 @@ func (ep EsParseSourceRepository) CreateParseSource(
   }
 
 	if multiLine {
-		err = indexMultiLineLog(client, grokId, psIndexName, file)
+		err = indexMultiLineLog(client, grokId, psIndexName, &file, fileName)
 	} else {
-		err = indexLog(client, grokId, psIndexName, file)
+		err = indexLog(client, grokId, psIndexName, &file, fileName)
 	}
 	
 	if err != nil {
@@ -167,7 +163,7 @@ func (ep EsParseSourceRepository) CreateParseSource(
 	return nil
 }
 
-func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *os.File) error {
+func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *io.Reader, fileName string) error {
 	var lineNumber int
 	
 	done := make(chan struct{})
@@ -183,7 +179,7 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 		go sendBulkRequest(client, done, parsedLog, psIndexName, grokId, wg)
 	}
 	
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(*file)
 	log.Println("Start scannnig log file")
   for scanner.Scan() {
 		line := scanner.Text()
@@ -193,7 +189,7 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 			// ignore brank line
 			continue
 		}
-		l := Log{LineNum: lineNumber, Message: line, File: filepath.Base(file.Name())}
+		l := Log{LineNum: lineNumber, Message: line, File: fileName}
 		parsedLog <- l
 	}
 
@@ -207,7 +203,7 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 	return nil
 }
 
-func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *os.File) error {
+func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *io.Reader, fileName string) error {
 	var g *grok.Grok
   var grokPattern string
 	log.Println("Fetch Grok Pattern from Elasticsearch")
@@ -256,7 +252,7 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 	}
 	
 	count := 0
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(*file)
 	log.Println("Start scannnig log file")
 	for scanner.Scan() {
 		line := scanner.Text()

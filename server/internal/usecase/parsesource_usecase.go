@@ -23,8 +23,8 @@ func (psu ParseSourceUsecase) FindParseSources(q string, searchTarget string) ([
 }
 
 func (psu ParseSourceUsecase) CreateParseSource(
-	searchTarget string, multiLine bool, fileName string, grokId string) error {
-	err := psu.parseSourceRepository.CreateParseSource(searchTarget, multiLine, fileName, grokId)
+	searchTarget string, multiLine bool, filePath string, grokId string) error {
+	err := psu.parseSourceRepository.CreateParseSource(searchTarget, multiLine, filePath, grokId)
 	if err != nil {
 		return err
 	}
