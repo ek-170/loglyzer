@@ -6,11 +6,12 @@ import (
 	"log"
 	"os"
 	"strconv"
-
+	fr "github.com/ek-170/loglyzer/internal/domain/filereader"
+	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 )
 
-type SshFileReader struct {
+type SftpFileReader struct {
 	path string
 	sshKeyPath   string
 	userName     string
@@ -19,7 +20,7 @@ type SshFileReader struct {
 	port         string
 }
 
-func (sfr *SshFileReader) ReadFile() (io.Reader, error) {
+func (sfr *SftpFileReader) ReadFile() (io.Reader, error) {
 	sshConfig :=  &ssh.ClientConfig{}
 	if sfr.userName!="" && sfr.sshKeyPath != "" {
 		signer, err := readPrivateKeyFile(sfr.sshKeyPath)
@@ -40,28 +41,27 @@ func (sfr *SshFileReader) ReadFile() (io.Reader, error) {
 			},
 		}
 	}else {
-		return nil, errors.New("Not sufficient credential(user Name is required, and either password or sshKeyPath is required)")
+		// case of insufficient credentials
+		return nil, errors.New("insufficient credential(user Name is required, and either password or sshKeyPath is required)")
 	}
 	
 	hostWithPort := sfr.host + ":" +  sfr.port
-	client, err := ssh.Dial("tcp", hostWithPort, sshConfig)
+	sshClient, err := ssh.Dial("tcp", hostWithPort, sshConfig)
 	if err != nil {
 		log.Println("Error establishing SSH connection:", err)
-		return nil, errors.New("Error establishing SSH connection")
+		return nil, errors.New("establishing SSH connection error")
 	}
-	defer client.Close()
+	defer sshClient.Close()
 
-	// start SSH session
-	session, err := client.NewSession()
+	client, err := sftp.NewClient(sshClient)
 	if err != nil {
-		log.Println("Error creating SSH session:", err)
-		return nil, errors.New("Error creating SSH session")
+		log.Println("Error creating SFTP client:", err)
+		return nil, errors.New("creating SFTP client error")
 	}
-	defer session.Close()
 
-	remoteFile, err := session.Open(sfr.path)
+	remoteFile, err := client.Open(sfr.path)
 	if err != nil {
-		return nil, errors.New("Error establishing SSH connection")
+		return nil, errors.New("establishing SSH connection error")
 	}
 	return remoteFile, nil
 }
@@ -70,31 +70,30 @@ func readPrivateKeyFile(path string) (ssh.Signer, error) {
 	privateKey, err := os.ReadFile(path)
 	if err != nil {
 		log.Println("Error reading private key file:", err)
-		return nil, errors.New("Error reading private key file")
+		return nil, errors.New("reading private key file error")
 	}
 
 	signer, err := ssh.ParsePrivateKey(privateKey)
 	if err != nil {
 		log.Println("Error parsing private key:", err)
-		return nil, errors.New("Error parsing private key")
+		return nil, errors.New("parsing private key error")
 	}
 
 	return signer, nil
 }
 
-func NewSshFileReader(conf FileReaderConfig) SshFileReader{
-	sfr := SshFileReader{}
+func NewSftpFileReader(conf fr.FileReaderConfig) *SftpFileReader{
+	sfr := SftpFileReader{}
 	sfr.path = conf.Path
 	sfr.sshKeyPath = conf.SshKeyPath
 	sfr.userName = conf.UserName
 	sfr.password = conf.Password
 	sfr.host = conf.Host
-	noPortValue := 0 
-	if conf.Port != noPortValue {
-		sfr.port = strconv.Itoa(conf.Port)
+	if conf.Port != nil {
+		sfr.port = strconv.Itoa(*conf.Port)
 	}else {
 		// SSH default Port
 		sfr.port = "22"
 	}
-	return sfr
+	return &sfr
 }

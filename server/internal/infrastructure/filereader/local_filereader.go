@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	fr "github.com/ek-170/loglyzer/internal/domain/filereader"
 	"github.com/ek-170/loglyzer/internal/config"
 	"github.com/ek-170/loglyzer/internal/util"
 )
@@ -28,8 +29,8 @@ func (lfr *LocalFileReader) ReadFile() (io.Reader, error) {
 	return file , nil
 }
 
-func NewLocalFileReader(conf FileReaderConfig) LocalFileReader{
+func NewLocalFileReader(conf fr.FileReaderConfig) *LocalFileReader{
 	lfr := LocalFileReader{}
 	lfr.path =conf.Path
-	return lfr
+	return &lfr
 }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/ek-170/loglyzer/internal/domain/repository"
+	fr "github.com/ek-170/loglyzer/internal/domain/filereader"
 )
 
 type ParseSourceUsecase struct {
@@ -23,8 +24,8 @@ func (psu ParseSourceUsecase) FindParseSources(q string, searchTarget string) ([
 }
 
 func (psu ParseSourceUsecase) CreateParseSource(
-	searchTarget string, multiLine bool, filePath string, grokId string) error {
-	err := psu.parseSourceRepository.CreateParseSource(searchTarget, multiLine, filePath, grokId)
+	searchTarget string, multiLine bool, frConf fr.FileReaderConfig, grokId string) error {
+	err := psu.parseSourceRepository.CreateParseSource(searchTarget, multiLine, frConf, grokId)
 	if err != nil {
 		return err
 	}

@@ -15,7 +15,8 @@ import (
 
 	"github.com/ek-170/loglyzer/internal/config"
 	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
-	"github.com/ek-170/loglyzer/internal/infrastructure/filereader"
+	fri "github.com/ek-170/loglyzer/internal/infrastructure/filereader"
+	frd "github.com/ek-170/loglyzer/internal/domain/filereader"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
@@ -81,13 +82,12 @@ type Log struct {
 }
 
 func (ep EsParseSourceRepository) CreateParseSource(
-	searchTarget string, multiLine bool, filePath string, grokId string) error {
+	searchTarget string, multiLine bool, fileConf frd.FileReaderConfig, grokId string) error {
 	
 	startTime := time.Now()
 
-
-	fr := filereader.LocalFileReader{}
-	file, err := fr.ReadFile()
+	reader := fri.InitFileReader(fileConf)
+	file, err := reader.ReadFile()
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (ep EsParseSourceRepository) CreateParseSource(
 		psIndexName = "ps_" + searchTarget + "_" + strconv.Itoa(int(order))
 	}
 
-	fileName := filepath.Base(filePath)
+	fileName := filepath.Base(fileConf.Path)
 	ps := ParseSource{
 		Name:  fileName,
 		Index: psIndexName,
@@ -146,9 +146,9 @@ func (ep EsParseSourceRepository) CreateParseSource(
   }
 
 	if multiLine {
-		err = indexMultiLineLog(client, grokId, psIndexName, &file, fileName)
+		err = indexMultiLineLog(client, grokId, psIndexName, file, fileName)
 	} else {
-		err = indexLog(client, grokId, psIndexName, &file, fileName)
+		err = indexLog(client, grokId, psIndexName, file, fileName)
 	}
 	
 	if err != nil {
@@ -163,7 +163,7 @@ func (ep EsParseSourceRepository) CreateParseSource(
 	return nil
 }
 
-func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *io.Reader, fileName string) error {
+func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file io.Reader, fileName string) error {
 	var lineNumber int
 	
 	done := make(chan struct{})
@@ -179,7 +179,7 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 		go sendBulkRequest(client, done, parsedLog, psIndexName, grokId, wg)
 	}
 	
-	scanner := bufio.NewScanner(*file)
+	scanner := bufio.NewScanner(file)
 	log.Println("Start scannnig log file")
   for scanner.Scan() {
 		line := scanner.Text()
@@ -197,13 +197,22 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 		return err
 	}
 
+	// If "file" implements Closer, call Close
+	if closer, ok := file.(io.Closer); ok {
+		err := closer.Close()
+		if err != nil {
+			log.Println("Failed to close file")
+			return err
+		}
+	}
+
 	close(done)
 	wg.Wait()
 
 	return nil
 }
 
-func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file *io.Reader, fileName string) error {
+func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file io.Reader, fileName string) error {
 	var g *grok.Grok
   var grokPattern string
 	log.Println("Fetch Grok Pattern from Elasticsearch")
@@ -252,7 +261,7 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 	}
 	
 	count := 0
-	scanner := bufio.NewScanner(*file)
+	scanner := bufio.NewScanner(file)
 	log.Println("Start scannnig log file")
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -270,14 +279,14 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 		if isMatched {
 			if len(multiLineLog) == 1 {
 				// send previous log to bulk request
-				l := Log{LineNum: lineNumber, Message: multiLineLog[0], File: filepath.Base(file.Name())}
+				l := Log{LineNum: lineNumber, Message: multiLineLog[0], File: fileName}
 				parsedLog <- l
 				// initialize multiLineLog
 				multiLineLog = []string{}
 				lineNumber = count
 			} else if len(multiLineLog) >= 2 {
 				// send previous log to bulk request
-				l := Log{LineNum: lineNumber, Message: strings.Join(multiLineLog, newLineCode), File: filepath.Base(file.Name())}
+				l := Log{LineNum: lineNumber, Message: strings.Join(multiLineLog, newLineCode), File: fileName}
 				parsedLog <- l
 				// initialize multiLineLog
 				multiLineLog = []string{}
@@ -292,15 +301,24 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 
 	// last log is left
 	if len(multiLineLog) == 1 {
-		l := Log{LineNum: lineNumber, Message: multiLineLog[0], File: filepath.Base(file.Name())}
+		l := Log{LineNum: lineNumber, Message: multiLineLog[0], File: fileName}
 		parsedLog <- l
 	} else if len(multiLineLog) >= 2 {
-		l := Log{LineNum: lineNumber, Message: strings.Join(multiLineLog, newLineCode), File: filepath.Base(file.Name())}
+		l := Log{LineNum: lineNumber, Message: strings.Join(multiLineLog, newLineCode), File: fileName}
 		parsedLog <- l
 	}
 
 	if err := scanner.Err(); err != nil {
 		return err
+	}
+
+	// If "file" implements Closer, call Close
+	if closer, ok := file.(io.Closer); ok {
+		err := closer.Close()
+		if err != nil {
+			log.Println("Failed to close file")
+			return err
+		}
 	}
 
 	close(done)

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	fr "github.com/ek-170/loglyzer/internal/domain/filereader"
 	"github.com/ek-170/loglyzer/internal/domain/repository"
 	"github.com/ek-170/loglyzer/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -46,8 +47,17 @@ func HandleParseSourceCreate(c echo.Context) error {
 	log.Printf("parsing target file path is \"%s\"", req.FilePath)
 	log.Printf("MultiLine setting enabled is \"%t\"", req.MultiLine)
 	log.Printf("Grok pattern name use for parsing is \"%s\"", req.GrokId)
+	frConf := fr.FileReaderConfig{
+		FileReadMode: req.FileReadMode,
+		Path: req.FilePath,
+		SshKeyPath: req.SshKeyPath,
+		UserName: req.UserName,
+		Password: req.Password,
+		Host: req.Host,
+		Port: &req.Port,
+	}
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	err := usecase.CreateParseSource(searchTarget, req.MultiLine, req.FilePath, req.GrokId)
+	err := usecase.CreateParseSource(searchTarget, req.MultiLine, frConf, req.GrokId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

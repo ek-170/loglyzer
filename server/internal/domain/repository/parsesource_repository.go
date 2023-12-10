@@ -1,8 +1,10 @@
 package repository
 
+import fr "github.com/ek-170/loglyzer/internal/domain/filereader"
+
 type ParseSourceRepository interface {
 	FindParseSources(q string, searchTarget string) ([]*ParseSource, error)
-	CreateParseSource(searchTarget string, multiLine bool, filePath string, grokId string) error
+	CreateParseSource(searchTarget string, multiLine bool, frConf fr.FileReaderConfig, grokId string) error
 	DeleteParseSource(id string, searchTarget string) error
 }
 
