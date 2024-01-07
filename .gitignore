@@ -36,3 +36,5 @@ logs/*
 logs
 misc
 .DS_Store
+.swc
+web/src/stories

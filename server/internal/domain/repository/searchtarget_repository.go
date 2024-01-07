@@ -9,5 +9,6 @@ type SearchTargetRepository interface {
 
 type SearchTarget struct {
 	Id string                   `json:"id"`
+  DataViewId string           `json:"dataViewId"`
 	ParseSources []*ParseSource `json:"parseSources"`
 }
