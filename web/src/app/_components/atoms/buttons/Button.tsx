@@ -1,33 +1,34 @@
 import { Padding, Width } from '@/app/_types/tailwind/Sizing';
-import { ComponentPropsWithRef } from 'react';
-import { ReactNode } from 'react';
+import { ComponentPropsWithRef, ReactNode } from 'react';
 import { tv } from 'tailwind-variants';
 
 /**
  * padding and width should be written in the way the class name of tailwind is written
  */
-type ButtonProps = {
-  color: 'positive' | 'negative' | 'danger';
+export type ButtonProps = {
+  color: 'positive' | 'negative' | 'danger' | 'primary';
   padding?: Padding[];
   width?: Width;
-  children?: ReactNode;
   buttonElementProps: ComponentPropsWithRef<'button'>;
+  children?: ReactNode;
 };
 
-export default function Button(props: ButtonProps) {
+export const Button = (props: ButtonProps) => {
   const paddings =
     props.padding && props.padding.length > 0
       ? props.padding
       : ['px-3', 'py-1.5'];
   const paddingClass = paddings.join(' ');
-  const width = props.width || 'w-20';
+  const width = props.width || 'w-fit';
+  // eslint-disable-next-line tailwindcss/no-custom-classname
   const button = tv({
     base: `flex justify-center rounded-md ${paddingClass} ${width} shadow-sm focus-visible:outline`,
     variants: {
       color: {
         positive: 'bg-sky-500 hover:bg-sky-300 disabled:bg-sky-100',
-        negative: 'bg-zinc-400 hover:bg-zinc-500 disabled:bg-zinc-200',
-        danger: 'bg-red-400 hover:bg-red-500 disabled:bg-red-200',
+        negative: 'bg-black-400 hover:bg-black-500 disabled:bg-black-200',
+        danger: 'bg-red-500 hover:bg-red-400 disabled:bg-red-200',
+        primary: 'bg-primary-500 hover:bg-primary-400 disabled:bg-primary-200',
       },
     },
   });
@@ -41,4 +42,4 @@ export default function Button(props: ButtonProps) {
       </button>
     </>
   );
-}
+};

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import Button from '@/app/_components/atoms/Button';
+import { Button } from '@/app/_components/atoms/buttons/Button';
 
 describe('Button', () => {
   it('button rendering', () => {
@@ -12,7 +12,7 @@ describe('Button', () => {
     };
 
     render(
-      <Button type="positive" buttonElementProps={buttonElementProps}>
+      <Button color="positive" buttonElementProps={buttonElementProps}>
         <div>Save</div>
       </Button>,
     );

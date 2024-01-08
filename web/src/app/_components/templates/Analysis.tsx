@@ -1,5 +1,5 @@
 'use client';
-import Button from '@/app/_components/atoms/Button';
+import Button from '@/app/_components/atoms/buttons/Button';
 
 export default function Analysis() {
   const buttonElementProps = {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Button from '@/app/_components/atoms/Button';
+import { Button } from '@/app/_components/atoms/buttons/Button';
 
 const buttonElementProps = {
   onClick: () => {
@@ -28,13 +28,13 @@ export const PositiveButton: Story = {
     color: 'positive',
     padding: ['px-3', 'py-1.5'],
     width: 'w-16',
-    children: <p>Save</p>,
+    children: <p className="text-white">Save</p>,
   },
 };
 
 export const NegativeButton: Story = {
   args: {
     color: 'negative',
-    children: <p>Cancel</p>,
+    children: <p className="text-white">Cancel</p>,
   },
 };
