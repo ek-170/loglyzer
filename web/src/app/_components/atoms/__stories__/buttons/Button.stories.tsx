@@ -2,13 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from '@/app/_components/atoms/buttons/Button';
 
-const buttonElementProps = {
-  onClick: () => {
-    alert('button pushed!');
-  },
-  disabled: false,
-};
-
 const meta: Meta<typeof Button> = {
   component: Button,
   parameters: {
@@ -16,7 +9,10 @@ const meta: Meta<typeof Button> = {
   },
   tags: ['autodocs'],
   args: {
-    buttonElementProps: buttonElementProps,
+    onClick: () => {
+      alert('button pushed!');
+    },
+    disabled: false,
   },
 };
 

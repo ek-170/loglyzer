@@ -4,15 +4,8 @@ import { Button } from '@/app/_components/atoms/buttons/Button';
 
 describe('Button', () => {
   it('button rendering', () => {
-    const buttonElementProps = {
-      onClick: () => {
-        alert('button pushed!');
-      },
-      disabled: false,
-    };
-
     render(
-      <Button color="positive" buttonElementProps={buttonElementProps}>
+      <Button color="positive" onClick={() => { alert('button pushed!'); }}>
         <div>Save</div>
       </Button>,
     );
