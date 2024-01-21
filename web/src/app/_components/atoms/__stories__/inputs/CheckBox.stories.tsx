@@ -13,7 +13,7 @@ const meta: Meta<typeof CheckBox> = {
 export default meta;
 type Story = StoryObj<typeof CheckBox>;
 
-export const UnCheckedCheckBox: Story = {
+export const SampleCheckBox: Story = {
   args: {
     label: 'checkbox',
     color: 'light',
