@@ -10,7 +10,9 @@ describe('IconButton', () => {
     render(
       <IconButton
         color="positive"
-        onClick={() => { alert('button pushed!'); }}
+        onClick={() => {
+          alert('button pushed!');
+        }}
         startIcon={startIcon}
       >
         <div>Search</div>

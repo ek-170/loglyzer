@@ -15,17 +15,12 @@ export type ButtonProps = {
 } & ComponentPropsWithRef<'button'>;
 
 export const Button = (props: ButtonProps) => {
-  const { color, padding, margin, width, children, ...buttonElementProps } = props;
-  const paddings =
-    padding && padding.length > 0
-      ? padding
-      : ['px-3', 'py-1.5'];
-  const margins =
-    margin && margin.length > 0
-      ? margin
-      : [];
+  const { color, padding, margin, width, children, ...buttonElementProps } =
+    props;
+  const paddings = padding && padding.length > 0 ? padding : ['px-3', 'py-1.5'];
+  const margins = margin && margin.length > 0 ? margin : [];
   const paddingClass = paddings.join(' ');
-  const marginClass = margins.join(' ')
+  const marginClass = margins.join(' ');
   const widthClass = width || 'w-fit';
   // eslint-disable-next-line tailwindcss/no-custom-classname
   const button = tv({
@@ -41,10 +36,7 @@ export const Button = (props: ButtonProps) => {
   });
   return (
     <>
-      <button
-        {...buttonElementProps}
-        className={button({ color: color })}
-      >
+      <button {...buttonElementProps} className={button({ color: color })}>
         {children}
       </button>
     </>

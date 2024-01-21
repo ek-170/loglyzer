@@ -36,7 +36,7 @@ export const InvalidInput: Story = {
     label: 'Email',
     color: 'light',
   },
-  render: function Wrapper(...args){
+  render: function Wrapper(...args) {
     const [value, setValue] = useState('test@gmail.com.');
     return (
       <Input

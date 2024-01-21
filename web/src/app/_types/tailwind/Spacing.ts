@@ -1,4 +1,4 @@
-import { Size } from "./Unit";
+import { Size } from './Unit';
 
 type PaddingDirection =
   | 'p'
@@ -24,4 +24,4 @@ type MarginDirection =
   | 'mb'
   | 'ml';
 
-  export type Margin = `${MarginDirection}-${Size}`;
+export type Margin = `${MarginDirection}-${Size}`;

@@ -5,7 +5,12 @@ import { Button } from '@/app/_components/atoms/buttons/Button';
 describe('Button', () => {
   it('button rendering', () => {
     render(
-      <Button color="positive" onClick={() => { alert('button pushed!'); }}>
+      <Button
+        color="positive"
+        onClick={() => {
+          alert('button pushed!');
+        }}
+      >
         <div>Save</div>
       </Button>,
     );
