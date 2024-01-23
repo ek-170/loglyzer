@@ -60,7 +60,7 @@ export const Input = (props: InputProps) => {
   });
 
   const inputTv = tv({
-    base: `peer rounded border border-gray-300 invalid:border-pink-500 invalid:text-pink-600 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-pink-500 focus:invalid:ring-pink-500`,
+    base: `peer rounded mb-1.5 border border-gray-300 invalid:border-pink-500 invalid:text-pink-600 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-pink-500 focus:invalid:ring-pink-500`,
     variants: {
       color: {
         light: 'bg-black-0 text-black-600 disabled:bg-black-500',
@@ -78,19 +78,19 @@ export const Input = (props: InputProps) => {
       )}
       <input {...inputElementProps} className={inputTv({ color: color })} />
       {inputElementProps.type === 'url' ? (
-        <p className="invisible text-sm text-red-500 peer-invalid:visible">
+        <p className="invisible text-sm text-pink-500 peer-invalid:visible">
           Please enter in Valid URL
         </p>
       ) : inputElementProps.type === 'email' ? (
-        <p className="invisible text-sm text-red-500 peer-invalid:visible">
+        <p className="invisible text-sm text-pink-500 peer-invalid:visible">
           Please enter in Valid Email
         </p>
       ) : inputElementProps.type === 'tel' ? (
-        <p className="invisible text-sm text-red-500 peer-invalid:visible">
+        <p className="invisible text-sm text-pink-500 peer-invalid:visible">
           Please enter in Valid Telephone Number
         </p>
       ) : (
-        <p className="invisible text-sm text-red-500 peer-invalid:visible">
+        <p className="invisible text-sm text-pink-500 peer-invalid:visible">
           Please enter in Valid value
         </p>
       )}
