@@ -31,7 +31,7 @@ export const File = (props: FileProps) => {
     if (!files || files?.length === 0) {
       return;
     }
-    setFileName(files?.item(0)?.name ?? "選択されていません");
+    setFileName(files?.item(0)?.name ?? '選択されていません');
   };
 
   return (
@@ -41,7 +41,7 @@ export const File = (props: FileProps) => {
           {label}
         </label>
       )}
-      <label className="mr-3 mb-1.5 inlineblock rounded bg-blue-500 p-2 hover:bg-blue-300">
+      <label className="inlineblock mb-1.5 mr-3 rounded bg-blue-500 p-2 hover:bg-blue-300">
         <input
           {...fileElementProps}
           type="file"

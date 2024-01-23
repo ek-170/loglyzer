@@ -28,6 +28,6 @@ export const SampleRadio: Story = {
       {
         text: 'option 3',
       },
-    ]
+    ],
   },
 };

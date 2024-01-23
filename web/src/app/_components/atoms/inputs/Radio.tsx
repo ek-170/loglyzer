@@ -17,20 +17,11 @@ export type RadioProps = {
   padding?: Padding[];
   margin?: Margin[];
   width?: Width;
-  radioItems: RadioItemProps[]
+  radioItems: RadioItemProps[];
 };
 
-
 export const Radio = (props: RadioProps) => {
-  const {
-    color,
-    label,
-    name,
-    padding,
-    margin,
-    width,
-    radioItems
-  } = props;
+  const { color, label, name, padding, margin, width, radioItems } = props;
 
   const paddings = padding && padding.length > 0 ? padding : ['p-0.5'];
   const margins = margin && margin.length > 0 ? margin : ['my-1.5'];
@@ -63,14 +54,18 @@ export const Radio = (props: RadioProps) => {
             const inputId = uuidv4();
             return (
               <div key={r.text}>
-                <input {...r.inputElementProps} id={inputId} type="checkbox" name={name} />
+                <input
+                  {...r.inputElementProps}
+                  id={inputId}
+                  type="checkbox"
+                  name={name}
+                />
                 <label htmlFor={inputId} className={textTv({ color: color })}>
                   {r.text}
                 </label>
               </div>
             );
-          })
-        }
+          })}
       </div>
     </div>
   );
