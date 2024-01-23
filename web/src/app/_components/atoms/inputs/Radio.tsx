@@ -57,7 +57,7 @@ export const Radio = (props: RadioProps) => {
                 <input
                   {...r.inputElementProps}
                   id={inputId}
-                  type="checkbox"
+                  type="radio"
                   name={name}
                 />
                 <label htmlFor={inputId} className={textTv({ color: color })}>
