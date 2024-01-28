@@ -36,12 +36,20 @@ export const Select = (props: SelectProps) => {
           {label}
         </label>
       )}
-      <select name='' className="mb-4 flex flex-col border border-gray-300 rounded focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" data-te-select-init>
+      <select
+        name=""
+        className="mb-4 flex flex-col rounded border border-gray-300 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+        data-te-select-init
+      >
         {optionItems.length > 0 &&
           optionItems.map((optionItem) => {
             const { text, ...option } = optionItem;
             return (
-              <option {...option} key={optionItem.text} className='text-md text-black-500'>
+              <option
+                {...option}
+                key={optionItem.text}
+                className="text-md text-black-500"
+              >
                 {optionItem.text}
               </option>
             );

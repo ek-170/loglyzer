@@ -54,12 +54,7 @@ export const Radio = (props: RadioProps) => {
             const { text, ...props } = radioItem;
             return (
               <div key={text}>
-                <input
-                  {...props}
-                  id={inputId}
-                  type="radio"
-                  name={name}
-                />
+                <input {...props} id={inputId} type="radio" name={name} />
                 <label htmlFor={inputId} className={textTv({ color: color })}>
                   {text}
                 </label>

@@ -36,6 +36,13 @@ module.exports = {
       // fuchsia: colors.fuchsia,
       pink: colors.pink,
       // rose: colors.rose,
+      elastic: {
+        50: '#c9f3f0',
+        100: '#9de9e4',
+        200: '#80e0da',
+        300: '#46cac2',
+        400: '#00bfb3',
+      },
     },
     extend: {},
   },
