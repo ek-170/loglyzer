@@ -7,8 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 type RadioItemProps = {
   text: string;
-  inputElementProps?: Omit<ComponentPropsWithRef<'input'>, 'type' | 'name'>;
-};
+} & Omit<ComponentPropsWithRef<'input'>, 'type' | 'name'>;
 
 export type RadioProps = {
   color: 'light' | 'dark' | 'primary';
@@ -50,18 +49,19 @@ export const Radio = (props: RadioProps) => {
       )}
       <div className="mb-4 flex flex-col">
         {radioItems.length > 0 &&
-          radioItems.map((r) => {
+          radioItems.map((radioItem) => {
             const inputId = uuidv4();
+            const { text, ...props } = radioItem;
             return (
-              <div key={r.text}>
+              <div key={text}>
                 <input
-                  {...r.inputElementProps}
+                  {...props}
                   id={inputId}
                   type="radio"
                   name={name}
                 />
                 <label htmlFor={inputId} className={textTv({ color: color })}>
-                  {r.text}
+                  {text}
                 </label>
               </div>
             );
