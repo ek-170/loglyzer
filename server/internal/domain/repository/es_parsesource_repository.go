@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/ek-170/loglyzer/internal/config"
+	frd "github.com/ek-170/loglyzer/internal/domain/filereader"
 	es "github.com/ek-170/loglyzer/internal/infrastructure/elasticsearch"
 	fri "github.com/ek-170/loglyzer/internal/infrastructure/filereader"
-	frd "github.com/ek-170/loglyzer/internal/domain/filereader"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
@@ -30,12 +30,12 @@ func NewEsParseSourceRepository() EsParseSourceRepository {
 }
 
 // Not allow multiple "q" separated by space
-func (ep EsParseSourceRepository) FindParseSources(q string, searchTarget string) ([]*ParseSource, error) {
+func (ep EsParseSourceRepository) FindParseSources(q string, analysis string) ([]*ParseSource, error) {
 	client, err := es.CreateElasticsearchClient()
 	if err != nil {
 		return nil, err
 	}
-	infoIndexName := "ps_" + searchTarget + "_info"
+	infoIndexName := "ps_" + analysis + "_info"
 	parseSources, err := SearchParseSources(client, q, infoIndexName)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func SearchParseSources(client *elasticsearch.TypedClient, q string, infoIndexNa
 		q := types.NewQuery()
 		q.Wildcard = wq
 		s = client.Search().Index(infoIndexName).Query(q).Fields(es.BuildParseSourceFields()).Sort(es.BuildParseSourceSort("name"))
-	}else {
+	} else {
 		s = client.Search().Index(infoIndexName).Fields(es.BuildParseSourceFields()).Sort(es.BuildParseSourceSort("name"))
 	}
 
@@ -63,7 +63,7 @@ func SearchParseSources(client *elasticsearch.TypedClient, q string, infoIndexNa
 		return nil, errors.New(es.HandleElasticsearchError(err))
 	}
 	var parseSources []*ParseSource = []*ParseSource{}
-	
+
 	for _, h := range res.Hits.Hits {
 		s := h.Source_
 		p := &ParseSource{}
@@ -77,13 +77,13 @@ func SearchParseSources(client *elasticsearch.TypedClient, q string, infoIndexNa
 
 type Log struct {
 	LineNum int    `json:"lineNumber"`
-	File string    `json:"file"`
+	File    string `json:"file"`
 	Message string `json:"message"`
 }
 
 func (ep EsParseSourceRepository) CreateParseSource(
-	searchTarget string, multiLine bool, fileConf frd.FileReaderConfig, grokId string) error {
-	
+	analysis string, multiLine bool, fileConf frd.FileReaderConfig, grokId string) error {
+
 	startTime := time.Now()
 
 	reader := fri.InitFileReader(fileConf)
@@ -97,7 +97,7 @@ func (ep EsParseSourceRepository) CreateParseSource(
 		return err
 	}
 
-	psInfoIndexName := "ps_" + searchTarget + "_info"
+	psInfoIndexName := "ps_" + analysis + "_info"
 	// Get all already existing ParseSource in descending order of Order
 	searchRes, err := client.Search().Index(psInfoIndexName).Fields(es.BuildParseSourceFields()).Sort(es.BuildParseSourceSort("order")).Do(context.Background())
 	if err != nil {
@@ -110,13 +110,13 @@ func (ep EsParseSourceRepository) CreateParseSource(
 	var order int16
 	if hitSize == 0 {
 		order = 1
-		psIndexName = "ps_" + searchTarget + "_" + strconv.Itoa(int(order))
+		psIndexName = "ps_" + analysis + "_" + strconv.Itoa(int(order))
 	} else {
 		source := searchRes.Hits.Hits[0].Source_
 		headPs := ParseSource{}
 		json.Unmarshal(source, &headPs)
 		order = int16(headPs.Order) + 1
-		psIndexName = "ps_" + searchTarget + "_" + strconv.Itoa(int(order))
+		psIndexName = "ps_" + analysis + "_" + strconv.Itoa(int(order))
 	}
 
 	fileName := filepath.Base(fileConf.Path)
@@ -133,24 +133,24 @@ func (ep EsParseSourceRepository) CreateParseSource(
 		return errors.New(es.HandleElasticsearchError(err))
 	}
 
-  _, err = client.Indices.Create(psIndexName).Do(context.Background())
-  if err != nil {
-    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Index")
-    return errors.New(es.HandleElasticsearchError(err))
-  }
+	_, err = client.Indices.Create(psIndexName).Do(context.Background())
+	if err != nil {
+		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Index")
+		return errors.New(es.HandleElasticsearchError(err))
+	}
 
-  _, err = client.Indices.PutAlias(psIndexName, searchTarget).Do(context.Background())
-  if err != nil {
-    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
-    return errors.New(es.HandleElasticsearchError(err))
-  }
+	_, err = client.Indices.PutAlias(psIndexName, analysis).Do(context.Background())
+	if err != nil {
+		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "create Alias")
+		return errors.New(es.HandleElasticsearchError(err))
+	}
 
 	if multiLine {
 		err = indexMultiLineLog(client, grokId, psIndexName, file, fileName)
 	} else {
 		err = indexLog(client, grokId, psIndexName, file, fileName)
 	}
-	
+
 	if err != nil {
 		return err
 	}
@@ -165,12 +165,12 @@ func (ep EsParseSourceRepository) CreateParseSource(
 
 func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file io.Reader, fileName string) error {
 	var lineNumber int
-	
+
 	done := make(chan struct{})
 	log.Printf("Bulk unit is: %d", config.Config.FullTextSearch.BulkUnit)
 	parsedLog := make(chan Log, config.Config.FullTextSearch.BulkUnit)
 	defer close(parsedLog)
-	
+
 	wg := &sync.WaitGroup{}
 	log.Printf("Number of worker: %d", config.Config.Parser.Worker)
 	// set up bulk request worker
@@ -178,10 +178,10 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 		wg.Add(1)
 		go sendBulkRequest(client, done, parsedLog, psIndexName, grokId, wg)
 	}
-	
+
 	scanner := bufio.NewScanner(file)
 	log.Println("Start scannnig log file")
-  for scanner.Scan() {
+	for scanner.Scan() {
 		line := scanner.Text()
 		lineNumber++
 
@@ -214,7 +214,7 @@ func indexLog(client *elasticsearch.TypedClient, grokId string, psIndexName stri
 
 func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndexName string, file io.Reader, fileName string) error {
 	var g *grok.Grok
-  var grokPattern string
+	var grokPattern string
 	log.Println("Fetch Grok Pattern from Elasticsearch")
 	res, err := client.Ingest.GetPipeline().Id(grokId).Do(context.Background())
 	if err != nil {
@@ -246,12 +246,12 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 	var lineNumber int = 1
 	// if multi line, this slice's len() is over two
 	var multiLineLog []string
-	
+
 	log.Printf("Bulk unit is: %d", config.Config.FullTextSearch.BulkUnit)
 	done := make(chan struct{})
 	parsedLog := make(chan Log, config.Config.FullTextSearch.BulkUnit)
 	defer close(parsedLog)
-	
+
 	wg := &sync.WaitGroup{}
 	log.Printf("Number of multiline worker: %d", config.Config.Parser.MultilineWorker)
 	// set up bulk request worker
@@ -259,7 +259,7 @@ func indexMultiLineLog(client *elasticsearch.TypedClient, grokId string, psIndex
 		wg.Add(1)
 		go sendBulkRequest(client, done, parsedLog, psIndexName, grokId, wg)
 	}
-	
+
 	count := 0
 	scanner := bufio.NewScanner(file)
 	log.Println("Start scannnig log file")
@@ -332,7 +332,7 @@ func sendBulkRequest(client *elasticsearch.TypedClient, done chan struct{}, pars
 	for {
 		bulk := client.Bulk()
 		bulkSize := 0
-		BULK:
+	BULK:
 		for {
 			select {
 			case l, ok := <-parsedLog:
@@ -343,7 +343,7 @@ func sendBulkRequest(client *elasticsearch.TypedClient, done chan struct{}, pars
 				op := types.NewIndexOperation()
 				bulk.IndexOp(*op, l)
 				bulkSize++
-				if(bulkSize == config.Config.FullTextSearch.BulkUnit){
+				if bulkSize == config.Config.FullTextSearch.BulkUnit {
 					_, err := bulk.Index(psIndexName).Pipeline(grokId).Do(context.Background())
 					if err != nil {
 						log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "Bulk Index")
@@ -361,9 +361,9 @@ func sendBulkRequest(client *elasticsearch.TypedClient, done chan struct{}, pars
 					for l := range parsedLog {
 						op := types.NewIndexOperation()
 						bulk.IndexOp(*op, l)
-						if len(parsedLog) == 0{
+						if len(parsedLog) == 0 {
 							break
-						} 
+						}
 					}
 				}
 				if existsRemainingLog || bulkSize > 0 {
@@ -383,18 +383,18 @@ func sendBulkRequest(client *elasticsearch.TypedClient, done chan struct{}, pars
 	}
 }
 
-func (ep EsParseSourceRepository) DeleteParseSource(id string, searchTarget string) error {
+func (ep EsParseSourceRepository) DeleteParseSource(id string, analysis string) error {
 	client, err := es.CreateElasticsearchClient()
 	if err != nil {
 		return err
 	}
-	psInfoIndexName := "ps_" + searchTarget + "_info"
+	psInfoIndexName := "ps_" + analysis + "_info"
 	// get delete target parsesource info
 	res, err := client.Get(psInfoIndexName, id).Source_("true").Do(context.Background())
-  if err != nil {
-    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get Doc")
-    return errors.New(es.HandleElasticsearchError(err))
-  }
+	if err != nil {
+		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "get Doc")
+		return errors.New(es.HandleElasticsearchError(err))
+	}
 	s := res.Source_
 	p := &ParseSource{}
 	json.Unmarshal(s, p)
@@ -402,16 +402,16 @@ func (ep EsParseSourceRepository) DeleteParseSource(id string, searchTarget stri
 	// delete parsesource
 	_, err = client.Indices.Delete(p.Index).Do(context.Background())
 	if err != nil {
-    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Index")
-    return errors.New(es.HandleElasticsearchError(err))
-  }
+		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Index")
+		return errors.New(es.HandleElasticsearchError(err))
+	}
 
 	// delete parsesource info
 	_, err = client.Delete(psInfoIndexName, id).Do(context.Background())
 	if err != nil {
-    log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Doc")
-    return errors.New(es.HandleElasticsearchError(err))
-  }
+		log.Printf(FAIL_REQUEST_ELASTIC_SEARCH, "delete Doc")
+		return errors.New(es.HandleElasticsearchError(err))
+	}
 
 	return nil
 }

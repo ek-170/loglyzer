@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/ek-170/loglyzer/internal/domain/repository"
 	fr "github.com/ek-170/loglyzer/internal/domain/filereader"
+	"github.com/ek-170/loglyzer/internal/domain/repository"
 )
 
 type ParseSourceUsecase struct {
@@ -15,8 +15,8 @@ func NewParseSourceUsecase(parseSourceRepository repository.ParseSourceRepositor
 	}
 }
 
-func (psu ParseSourceUsecase) FindParseSources(q string, searchTarget string) ([]*repository.ParseSource, error) {
-	result, err := psu.parseSourceRepository.FindParseSources(q, searchTarget)
+func (psu ParseSourceUsecase) FindParseSources(q string, analysis string) ([]*repository.ParseSource, error) {
+	result, err := psu.parseSourceRepository.FindParseSources(q, analysis)
 	if err != nil {
 		return nil, err
 	}
@@ -24,16 +24,16 @@ func (psu ParseSourceUsecase) FindParseSources(q string, searchTarget string) ([
 }
 
 func (psu ParseSourceUsecase) CreateParseSource(
-	searchTarget string, multiLine bool, frConf fr.FileReaderConfig, grokId string) error {
-	err := psu.parseSourceRepository.CreateParseSource(searchTarget, multiLine, frConf, grokId)
+	analysis string, multiLine bool, frConf fr.FileReaderConfig, grokId string) error {
+	err := psu.parseSourceRepository.CreateParseSource(analysis, multiLine, frConf, grokId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (psu ParseSourceUsecase) DeleteParseSource(id string, searchTarget string) error {
-	err := psu.parseSourceRepository.DeleteParseSource(id, searchTarget)
+func (psu ParseSourceUsecase) DeleteParseSource(id string, analysis string) error {
+	err := psu.parseSourceRepository.DeleteParseSource(id, analysis)
 	if err != nil {
 		return err
 	}

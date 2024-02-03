@@ -15,9 +15,9 @@ func HandleParseSourceFind(c echo.Context) error {
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
 	q := c.QueryParam("q")
 	log.Printf("query keyword is \"%s\"", q)
-	searchTarget := c.Param("search-target")
-	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
-	st, err := usecase.FindParseSources(q, searchTarget)
+	analysis := c.Param("analysis")
+	log.Printf("specified Analysis is \"%s\"", analysis)
+	st, err := usecase.FindParseSources(q, analysis)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -42,22 +42,22 @@ func HandleParseSourceCreate(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, "bad request")
 	}
-	searchTarget := c.Param("search-target")
-	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
+	analysis := c.Param("analysis")
+	log.Printf("specified Analysis is \"%s\"", analysis)
 	log.Printf("parsing target file path is \"%s\"", req.FilePath)
 	log.Printf("MultiLine setting enabled is \"%t\"", req.MultiLine)
 	log.Printf("Grok pattern name use for parsing is \"%s\"", req.GrokId)
 	frConf := fr.FileReaderConfig{
 		FileReadMode: req.FileReadMode,
-		Path: req.FilePath,
-		SshKeyPath: req.SshKeyPath,
-		UserName: req.UserName,
-		Password: req.Password,
-		Host: req.Host,
-		Port: &req.Port,
+		Path:         req.FilePath,
+		SshKeyPath:   req.SshKeyPath,
+		UserName:     req.UserName,
+		Password:     req.Password,
+		Host:         req.Host,
+		Port:         &req.Port,
 	}
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	err := usecase.CreateParseSource(searchTarget, req.MultiLine, frConf, req.GrokId)
+	err := usecase.CreateParseSource(analysis, req.MultiLine, frConf, req.GrokId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -67,11 +67,11 @@ func HandleParseSourceCreate(c echo.Context) error {
 func HandleParseSourceDelete(c echo.Context) error {
 	log.Println("Start deleting ParseSource.")
 	usecase := usecase.NewParseSourceUsecase(repository.NewEsParseSourceRepository())
-	searchTarget := c.Param("search-target")
-	log.Printf("specified SearchTarget is \"%s\"", searchTarget)
+	analysis := c.Param("analysis")
+	log.Printf("specified Analysis is \"%s\"", analysis)
 	id := c.Param("parse-source-id")
 	log.Printf("specified ParseSource info ID is \"%s\"", id)
-	err := usecase.DeleteParseSource(id, searchTarget)
+	err := usecase.DeleteParseSource(id, analysis)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
