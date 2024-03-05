@@ -20,7 +20,7 @@ func HandleElasticsearchError(err error) string {
 	if err != nil {
 		return err.Error()
 	}
-	return convertMsg4EndUser(esErr)
+	return convertMsg4User(esErr)
 }
 
 func parseElasticsearchError(errorStr string) (ElasticsearchError, error) {
@@ -29,7 +29,7 @@ func parseElasticsearchError(errorStr string) (ElasticsearchError, error) {
 	re := regexp.MustCompile(`status: (\d+), failed: \[(.*)\], reason: (.*)`)
 	matches := re.FindStringSubmatch(errorStr)
 	if len(matches) != 4 {
-    log.Println("failed to parse Elasticsearch error message")
+		log.Println("failed to parse Elasticsearch error message")
 		return result, errors.New("unknown error has occured when communicate Elasticsearch. please check docker log")
 	}
 	result.Status = parseInt(matches[1])
@@ -50,7 +50,7 @@ func parseInt(s string) int {
 	return i
 }
 
-func convertMsg4EndUser(err ElasticsearchError) string {
+func convertMsg4User(err ElasticsearchError) string {
 	if err.Failed == ES_F00001 {
 		return ES_EM00001
 	}
