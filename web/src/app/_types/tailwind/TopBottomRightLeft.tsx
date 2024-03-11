@@ -1,27 +1,12 @@
-export type Top =
-  | `top-${Size}`
-  | `top-${Auto}`
-  | `top-${Ratio}`;
+export type Top = `top-${Size}` | `top-${Auto}` | `top-${Ratio}`;
 
-export type Bottom =
-  | `bottom-${Size}`
-  | `bottom-${Auto}`
-  | `bottom-${Ratio}`;
+export type Bottom = `bottom-${Size}` | `bottom-${Auto}` | `bottom-${Ratio}`;
 
-export type Right =
-  | `right-${Size}`
-  | `right-${Auto}`
-  | `right-${Ratio}`;
+export type Right = `right-${Size}` | `right-${Auto}` | `right-${Ratio}`;
 
-export type Left =
-  | `left-${Size}`
-  | `left-${Auto}`
-  | `left-${Ratio}`;
+export type Left = `left-${Size}` | `left-${Auto}` | `left-${Ratio}`;
 
-export type Start =
-  | `start-${Size}`
-  | `start-${Auto}`
-  | `start-${Ratio}`;
+export type Start = `start-${Size}` | `start-${Auto}` | `start-${Ratio}`;
 
 export type Inset =
   | `inset-${Size}`
@@ -34,10 +19,7 @@ export type Inset =
   | `inset-y-${Auto}`
   | `inset-y-${Ratio}`;
 
-export type End =
-  | `end-${Size}`
-  | `end-${Auto}`
-  | `end-${Ratio}`;
+export type End = `end-${Size}` | `end-${Auto}` | `end-${Ratio}`;
 
 type Size =
   | 'px'
@@ -78,11 +60,4 @@ type Size =
 
 type Auto = 'auto';
 
-type Ratio =
-  | '1/2'
-  | '1/3'
-  | '2/3'
-  | '1/4'
-  | '2/4'
-  | '3/4'
-  | 'full';
+type Ratio = '1/2' | '1/3' | '2/3' | '1/4' | '2/4' | '3/4' | 'full';

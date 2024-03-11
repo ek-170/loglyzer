@@ -9,7 +9,7 @@ export type Width =
   | `w-${Ratio}`
   | `w-${Content}`;
 
-  type Size =
+type Size =
   | 'px'
   | 0
   | 0.5

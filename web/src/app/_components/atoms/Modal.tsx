@@ -8,28 +8,27 @@ export type ModalProps = {
   bottom?: Bottom;
   children: ReactNode;
   isOpen: boolean;
-} & ComponentPropsWithRef<'div'>;;
+} & ComponentPropsWithRef<'div'>;
 
 export const Modal = (props: ModalProps) => {
-  const {
-    top,
-    bottom,
-    children,
-    isOpen,
-    ...divElementProps
-  } = props;
+  const { top, bottom, children, isOpen, ...divElementProps } = props;
   const modalTv = tv({
-    base: `relative ${top ?? "top-0"} ${bottom ?? "bottom-0"} left-0 h-dvh w-dvw flex items-center justify-center`,
+    base: `relative ${top ?? 'top-0'} ${
+      bottom ?? 'bottom-0'
+    } left-0 flex h-dvh w-dvw items-center justify-center`,
     variants: {
       state: {
-        open: 'bg-black-500 animate-appear opacity-60	',
-        close: 'animate-disappear invisible',
+        open: 'animate-appear bg-black-500 opacity-60	',
+        close: 'invisible animate-disappear',
       },
     },
   });
   return (
     <>
-      <div {...divElementProps} className={modalTv({state: isOpen ? "open" : "close"})}>
+      <div
+        {...divElementProps}
+        className={modalTv({ state: isOpen ? 'open' : 'close' })}
+      >
         {children}
       </div>
     </>
