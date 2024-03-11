@@ -37,14 +37,29 @@ module.exports = {
       pink: colors.pink,
       // rose: colors.rose,
       elastic: {
-        50: '#c9f3f0',
+        50:  '#c9f3f0',
         100: '#9de9e4',
         200: '#80e0da',
         300: '#46cac2',
         400: '#00bfb3',
       },
     },
-    extend: {},
+    extend: {
+      keyframes: {
+        appear: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+        disappear: {
+          "0%": { opacity: 1 },
+          "100%": { opacity: 0 },
+        },
+      },
+      animation: {
+        appear: "appear 1.5s ease 0s 1 forwards",
+        disappear: "disappear 3s ease 0s 1 forwards",
+      },
+    },
   },
   plugins: [],
 };

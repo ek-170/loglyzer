@@ -1,1 +1,0 @@
-// icon + typograpy + icon

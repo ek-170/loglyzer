@@ -6,7 +6,7 @@ describe('LinkButton', () => {
   it('button rendering', () => {
     render(
       <LinkButton
-        color="kibana"
+        color="elastic"
         href={''}
         onClick={() => {
           alert('button pushed!');
