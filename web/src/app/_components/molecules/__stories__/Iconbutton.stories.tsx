@@ -17,7 +17,7 @@ const meta: Meta<typeof IconButton> = {
   },
   tags: ['autodocs'],
   args: {
-    buttonElementProps: buttonElementProps,
+    ...buttonElementProps,
     padding: ['px-3', 'py-1.5'],
   },
 };

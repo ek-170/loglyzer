@@ -22,7 +22,6 @@ export const Button = (props: ButtonProps) => {
   const paddingClass = paddings.join(' ');
   const marginClass = margins.join(' ');
   const widthClass = width || 'w-fit';
-  // eslint-disable-next-line tailwindcss/no-custom-classname
   const button = tv({
     base: `flex justify-center rounded-md ${paddingClass} ${marginClass} ${widthClass} shadow-sm focus-visible:outline`,
     variants: {

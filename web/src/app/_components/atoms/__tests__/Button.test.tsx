@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { Button } from '@/app/_components/atoms/buttons/Button';
+import { Button } from '@/app/_components/atoms';
+import { render, screen } from '@/app/_test/test-utils';
 
 describe('Button', () => {
   it('button rendering', () => {

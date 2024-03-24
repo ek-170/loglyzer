@@ -23,7 +23,6 @@ export const LinkButton = (props: LinkButtonProps) => {
   const paddingClass = paddings.join(' ');
   const marginClass = margins.join(' ');
   const widthClass = width || 'w-fit';
-  // eslint-disable-next-line tailwindcss/no-custom-classname
   const wrapper = tv({
     base: `rounded-md ${widthClass}`,
     variants: {

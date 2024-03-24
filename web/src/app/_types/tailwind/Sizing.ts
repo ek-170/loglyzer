@@ -2,13 +2,6 @@ type VH = 'screen' | 'svh' | 'lvh' | 'dvh';
 
 type Content = 'min' | 'max' | 'fit';
 
-export type Width =
-  | `w-${Size}`
-  | `w-${Auto}`
-  | `w-${VH}`
-  | `w-${Ratio}`
-  | `w-${Content}`;
-
 type Size =
   | 'px'
   | 0
@@ -65,3 +58,19 @@ type Ratio =
   | '4/6'
   | '5/6'
   | 'full';
+
+export type Width =
+  | `w-${Size}`
+  | `w-${Auto}`
+  | `w-${VH}`
+  | `w-${Ratio}`
+  | `w-[${number}px]`
+  | `w-${Content}`;
+
+export type Height =
+  | `h-${Size}`
+  | `h-${Auto}`
+  | `h-${VH}`
+  | `h-${Ratio}`
+  | `h-[${number}px]`
+  | `h-${Content}`;

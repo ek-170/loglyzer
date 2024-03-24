@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { IconButton } from '@/app/_components/molecules/IconButton';
-import { SearchIcon } from '@/app/_components/atoms/icons/SearchIcon';
+import { render, screen } from '@/app/_test/test-utils';
+import { IconButton } from '@/app/_components/molecules';
+import { SearchIcon } from '@/app/_components/atoms';
 
 describe('IconButton', () => {
   it('button rendering', () => {

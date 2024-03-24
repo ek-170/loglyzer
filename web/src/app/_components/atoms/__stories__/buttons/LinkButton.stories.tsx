@@ -17,8 +17,8 @@ export const KibanaLinkButton: Story = {
   args: {
     color: 'elastic',
     padding: ['px-3', 'py-1.5'],
-    width: 'w-8',
+    width: 'w-fit',
     href: '/',
-    children: <p className="text-black">Kibana</p>,
+    children: <p className="text-white">Kibana</p>,
   },
 };

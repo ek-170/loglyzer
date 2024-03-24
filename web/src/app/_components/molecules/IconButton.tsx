@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '../atoms/buttons/Button';
+import { Button, ButtonProps } from '../atoms';
 import { ReactElement } from 'react';
 import { SvgIconProps } from '../atoms/icons/SvgIcon';
 

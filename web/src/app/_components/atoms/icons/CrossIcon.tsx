@@ -6,7 +6,7 @@ export const CrossIcon = (props: SvgIconProps) => {
   const height = props.height || 30;
   const color = props.color || 'rgb(75, 75, 75)';
   return (
-    <div className="grid h-full w-full place-items-center">
+    <div className="grid place-items-center">
       <svg
         version="1.1"
         id="_x32_"
