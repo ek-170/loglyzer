@@ -22,7 +22,7 @@ const SampleModalDialogWrapper = (args: ComponentProps<typeof ModalDialog>) => {
       setIsOpen(false);
     }
   };
-  const children = (
+  const dialogContents = (
     <div
       className="flex-column text-black shadow-slate-50 h-[200px] w-[300px] items-center
  justify-center rounded bg-white text-center"
@@ -51,7 +51,7 @@ const SampleModalDialogWrapper = (args: ComponentProps<typeof ModalDialog>) => {
         onClick={(e) => handleOnClick(e)}
         isOpen={isOpen}
       >
-        {children}
+        {dialogContents}
       </ModalDialog>
     </>
   );

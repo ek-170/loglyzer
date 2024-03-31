@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import { Bottom, Top } from '@/app/_types/tailwind/TopBottomRightLeft';
 import { ComponentPropsWithRef, ReactNode, forwardRef } from 'react';
 import { tv } from 'tailwind-variants';

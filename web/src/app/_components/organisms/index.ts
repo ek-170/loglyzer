@@ -1,1 +1,1 @@
-export * from '../molecules/Tab';
+export * from './Header';
