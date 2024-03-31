@@ -16,21 +16,22 @@ type Story = StoryObj<typeof ModalDialog>;
 
 const SampleModalDialogWrapper = (args: ComponentProps<typeof ModalDialog>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const modalRef = useRef(null)
+  const modalRef = useRef(null);
   const handleOnClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (e.target === modalRef.current) {
       setIsOpen(false);
     }
-  }
+  };
   const children = (
     <div
-      className="flex-column h-[200px] w-[300px] items-center justify-center rounded
- bg-white text-center text-black shadow-slate-50"
+      className="flex-column text-black shadow-slate-50 h-[200px] w-[300px] items-center
+ justify-center rounded bg-white text-center"
     >
-      <p className='my-10'>
-        This is Dialog
-      </p>
-      <button className='bg-primary-400 rounded p-1 text-white' onClick={() => setIsOpen(false)} >
+      <p className="my-10">This is Dialog</p>
+      <button
+        className="rounded bg-primary-400 p-1 text-white"
+        onClick={() => setIsOpen(false)}
+      >
         閉じる
       </button>
     </div>
@@ -43,10 +44,13 @@ const SampleModalDialogWrapper = (args: ComponentProps<typeof ModalDialog>) => {
       >
         {isOpen ? 'Close' : 'Open'} ModalDialog
       </button>
-      <div className='text-[80px]'>
-        This is a Background Contents
-      </div>
-      <ModalDialog {...args} ref={modalRef} onClick={e=>handleOnClick(e)} isOpen={isOpen} >
+      <div className="text-[80px]">This is a Background Contents</div>
+      <ModalDialog
+        {...args}
+        ref={modalRef}
+        onClick={(e) => handleOnClick(e)}
+        isOpen={isOpen}
+      >
         {children}
       </ModalDialog>
     </>
@@ -60,7 +64,9 @@ export const SampleModalDialog: Story = {
 export const ModalDialogWithHeader: Story = {
   args: {
     header: (
-      <div className='rounded-t-md bg-blue-400 p-2 text-white'>Dialog Header</div>
+      <div className="rounded-t-md bg-blue-400 p-2 text-white">
+        Dialog Header
+      </div>
     ),
   },
   render: (args) => <SampleModalDialogWrapper {...args} />,

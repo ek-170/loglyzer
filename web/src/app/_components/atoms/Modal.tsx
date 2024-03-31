@@ -19,7 +19,7 @@ export const Modal = (props: ModalProps) => {
     variants: {
       state: {
         open: 'animate-appear bg-black-500/50	',
-        close: 'animate-disappear invisible',
+        close: 'invisible animate-disappear',
       },
     },
   });
