@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Tab } from '@/app/_components/organisms/Tab';
+import { Tab } from '@/app/_components/molecules/Tab';
 
 const itemChildren1 = (
   <div>

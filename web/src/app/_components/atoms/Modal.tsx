@@ -18,8 +18,8 @@ export const Modal = (props: ModalProps) => {
     } left-0 flex h-dvh w-dvw items-center justify-center`,
     variants: {
       state: {
-        open: 'animate-appear bg-black-500 opacity-60	',
-        close: 'invisible animate-disappear',
+        open: 'animate-appear bg-black-500/50	',
+        close: 'animate-disappear invisible',
       },
     },
   });

@@ -56,7 +56,7 @@ module.exports = {
         },
       },
       animation: {
-        appear: 'appear 1.5s ease 0s 1 forwards',
+        appear: 'appear 1s ease 0s 1 forwards',
         disappear: 'disappear 3s ease 0s 1 forwards',
       },
     },
