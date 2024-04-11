@@ -1,10 +1,14 @@
-import Analysis from './_components/templates/Analysis';
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main>
-      <h1 className="text-red-800">Hello World</h1>
-      <Analysis></Analysis>
+    <main className='m-5'>
+      <p>This page is under construction.</p>
+      <Link href={"/analyses"}>
+        <p>
+          <strong  className='text-blue-500 hover:underline hover:decoration-blue-500'>Go Analyses</strong>
+        </p>
+      </Link>
     </main>
   );
 }

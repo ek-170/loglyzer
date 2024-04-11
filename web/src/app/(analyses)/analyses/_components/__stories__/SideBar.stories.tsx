@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SideBar } from '@/app/analyses/_components/SideBar';
+import { SideBar } from '@/app/(analyses)/analyses/_components/SideBar';
 import { Analysis } from '../../_types/type';
 
 const analyses: Analysis[] = [
