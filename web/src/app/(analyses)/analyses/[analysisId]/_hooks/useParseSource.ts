@@ -1,9 +1,12 @@
-const deleteAnalysis = async (url: string, { arg }: { arg: { username: string } }) => {
+const deleteAnalysis = async (
+  url: string,
+  { arg }: { arg: { username: string } },
+) => {
   const res = await fetch(url, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
-  return res.json()
-}
+  return res.json();
+};

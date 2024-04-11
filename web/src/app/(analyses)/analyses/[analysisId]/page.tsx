@@ -1,11 +1,10 @@
-"use client"
+'use client';
 
 type AnalysisPageProps = {
-  params: { analysisId: string }
-}
+  params: { analysisId: string };
+};
 
 export default function AnalysisPage({ params }: AnalysisPageProps) {
-
   // fetch from client
 
   return (

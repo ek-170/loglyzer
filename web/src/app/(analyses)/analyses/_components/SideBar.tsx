@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { Button, PlusIcon, TrashBoxIcon } from '@/app/_components/atoms';
 import { IconButton } from '@/app/_components/molecules';
@@ -11,7 +11,7 @@ export type AnalysisSideBarProps = {
 };
 
 export const SideBar = (props: AnalysisSideBarProps) => {
-  const [selectedAnalysisId, setSelectedAnalysisId] = useState<string>("");
+  const [selectedAnalysisId, setSelectedAnalysisId] = useState<string>('');
 
   return (
     <aside className="flex h-full w-[300px] flex-col divide-y-4 border-4 border-primary-100">
@@ -28,12 +28,17 @@ export const SideBar = (props: AnalysisSideBarProps) => {
             return (
               <li
                 key={a.id}
-                className={`flex border-b px-3 py-1.5 hover:bg-primary-50 ${selectedAnalysisId===a.id && "bg-primary-50"}`}
+                className={`flex border-b px-3 py-1.5 hover:bg-primary-50 ${
+                  selectedAnalysisId === a.id && 'bg-primary-50'
+                }`}
               >
                 <div className="grow overflow-x-auto">
-                  <Link className='w-full' href={`/analyses/${a.id}`}>
-                    <Button width="w-full" onClick={() => setSelectedAnalysisId(a.id)}>
-                        {a.id}
+                  <Link className="w-full" href={`/analyses/${a.id}`}>
+                    <Button
+                      width="w-full"
+                      onClick={() => setSelectedAnalysisId(a.id)}
+                    >
+                      {a.id}
                     </Button>
                   </Link>
                 </div>

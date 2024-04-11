@@ -1,32 +1,38 @@
-import useSWR from 'swr'
-import { fetcher }  from '@/app/_lib/fetch'
+import useSWR from 'swr';
+import { fetcher } from '@/app/_lib/fetch';
 import useSWRMutation from 'swr/mutation';
 import { Analysis } from '@/app/(analyses)/analyses/_types/type';
 
-const createAnalysisFetcher = async (url: string, { arg }: { arg: { analysis: Omit<Analysis, "parseSources"> } }) => {
+const createAnalysisFetcher = async (
+  url: string,
+  { arg }: { arg: { analysis: Omit<Analysis, 'parseSources'> } },
+) => {
   const res = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
-  return res.json()
-}
+  return res.json();
+};
 
 const deleteAnalysisFetcher = async (url: string) => {
   const res = await fetch(url, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
-  return res.json()
-}
+  return res.json();
+};
 
 export function useAnalysis(id: string) {
-  const { data, error, isLoading } = useSWR(`/api/analyses/${id}`, fetcher)
+  const { data, error, isLoading } = useSWR(`/api/analyses/${id}`, fetcher);
 
-  const createAnalysis = useSWRMutation(`/api/analyses/${id}`, createAnalysisFetcher)
+  const createAnalysis = useSWRMutation(
+    `/api/analyses/${id}`,
+    createAnalysisFetcher,
+  );
 
   // const updateAnalysis = async (analysis: Analysis) => {
   //   if (!data) {
@@ -35,7 +41,10 @@ export function useAnalysis(id: string) {
   //   mutate();
   // };
 
-  const deleteAnalysis = useSWRMutation(`/api/analyses/${id}`, deleteAnalysisFetcher)
+  const deleteAnalysis = useSWRMutation(
+    `/api/analyses/${id}`,
+    deleteAnalysisFetcher,
+  );
 
   return {
     user: data,
@@ -43,6 +52,6 @@ export function useAnalysis(id: string) {
     isError: error,
     createAnalysis,
     // updateAnalysis,
-    deleteAnalysis
-  }
+    deleteAnalysis,
+  };
 }

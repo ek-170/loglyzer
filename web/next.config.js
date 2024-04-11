@@ -3,7 +3,7 @@ const nextConfig = {
   trailingSlash: true,
   basePath: '/loglyzer',
   distDir: 'build',
-    async redirects() {
+  async redirects() {
     return [
       {
         source: '/',
@@ -17,7 +17,7 @@ const nextConfig = {
         permanent: true,
         basePath: false,
       },
-    ]
+    ];
   },
 };
 
