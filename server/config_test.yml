@@ -1,0 +1,6 @@
+server:
+  port: "19999"
+fullTextSearch:
+  ftsScheme : "http"
+  ftsHost: "es01-test"
+  ftsPort: "29999"

@@ -1,0 +1,17 @@
+{
+  "processors": [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{TOMCAT_DATESTAMP:timestamp}  %{LOGLEVEL:log.level} \\[%{DATA:java.log.origin.thread.name}\\] - %{MESSAGE:message}"
+        ],
+        "pattern_definitions": {
+          "MESSAGE": "[\\s\\S]*"
+        },
+        "ecs_compatibility":"v1",
+        "description": "APサーバーのログフォーマットです。"
+      }
+    }
+  ]
+}
